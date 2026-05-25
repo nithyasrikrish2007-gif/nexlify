@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Nexlify Learning</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Initialize user data and check login status
+        var _u = JSON.parse(localStorage.getItem('nexlify_user') || '{}');
+        if (localStorage.getItem('nexlify_logged_in') !== 'true' || !_u.email) {
+            window.location.href = 'login.html';
+        }
+
+        // Populate sidebar and greeting on DOMContentLoaded
+        // This ensures elements are available before trying to update them
+        document.addEventListener('DOMContentLoaded', function() {
+            var firstName = (_u.name || 'Student').split(' ')[0];
+            document.getElementById('greetName').textContent = firstName;
+            document.getElementById('sideName').textContent  = _u.name || 'Student';
+            document.getElementById('sideEmail').textContent = _u.email || '';
+            document.getElementById('sideAvatar').textContent = firstName.charAt(0).toUpperCase();
+            if (typeof loadLatestInterviewScore === 'function') loadLatestInterviewScore();
+        });
+    </script>
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #facc15, #eab308);
+            --success: linear-gradient(135deg, #10b981, #059669);
+            --accent: linear-gradient(135deg, #facc15, #d97706);
+            --bg-light: #0f111a;
+            --card-bg: rgba(30,41,59,0.95);
+            --text-dark: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(250,204,21,0.15);
+            --shadow: 0 10px 40px rgba(0,0,0,0.3);
+            --shadow-hover: 0 20px 60px rgba(250,204,21,0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .dash-wrapper { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 70px); margin-top: 70px; }
+        .dash-sidebar { background: rgba(30,41,59,0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--border); padding: 2rem 1rem; display: flex; flex-direction: column; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .dash-avatar { width: 72px; height: 72px; background: linear-gradient(135deg,#facc15,#eab308); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; color: #1e293b; margin: 0 auto 12px; }
+        .dash-sidebar-profile { text-align: center; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px; }
+        .dash-sidebar-profile h3 { color: #fff; font-size: 1rem; margin-bottom: 4px; }
+        .dash-sidebar-profile span { color: #94a3b8; font-size: 0.82rem; }
+        .dash-nav { display: flex; flex-direction: column; gap: 4px; }
+        .dash-nav a { display: flex; align-items: center; gap: 12px; padding: 11px 14px; color: #94a3b8; text-decoration: none; border-radius: 10px; font-size: 0.92rem; font-weight: 500; transition: all 0.2s; }
+        .dash-nav a:hover, .dash-nav a.active { background: rgba(250,204,21,0.1); color: #facc15; }
+        .dash-nav a i { width: 18px; }
+        .dash-logout { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .dash-logout a { display: flex; align-items: center; gap: 12px; padding: 11px 14px; color: #ef4444; text-decoration: none; border-radius: 10px; font-size: 0.92rem; font-weight: 500; transition: background 0.2s; }
+        .dash-logout a:hover { background: rgba(239,68,68,0.1); }
+        .dash-main { padding: 2.5rem; background: var(--bg-light); overflow-y: auto; }
+        .dash-section { display: none; }
+        .dash-section.active { display: block; }
+        .dash-greeting { background: var(--card-bg); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; border: 1px solid var(--border); }
+        .dash-greeting h1 { font-size: clamp(2rem,4vw,2.5rem); background: var(--primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; margin-bottom: 0.5rem; color: #f8fafc; }
+        .dash-greeting p { color: var(--text-muted); font-size: 1.1rem; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: var(--card-bg); border-radius: 20px; padding: 1.8rem; display: flex; align-items: center; gap: 1.2rem; border: 1px solid var(--border); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .stat-card::before { content:''; position: absolute; top:0; left:0; right:0; height:4px; background: var(--primary); transform: scaleX(0); transition: transform 0.3s; }
+        .stat-card:hover::before { transform: scaleX(1); }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .stat-icon { width:60px; height:60px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#fff; flex-shrink:0; }
+        .stat-icon.primary { background: linear-gradient(135deg,#facc15,#eab308); color:#1e293b !important; }
+        .stat-icon.success { background: var(--success); }
+        .stat-icon.accent  { background: var(--accent); }
+        .stat-content h3 { font-size:2rem; color: #f8fafc; font-weight:800; margin-bottom:0.25rem; }
+        .stat-content p  { color: var(--text-muted); font-size:0.9rem; font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+        .enrolled-card { background: var(--card-bg); border-radius:24px; padding:2.5rem; border:1px solid var(--border); margin-bottom:2.5rem; box-shadow: var(--shadow); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem; transition: all 0.3s; }
+        .enrolled-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .enrolled-card h2 { font-size:1.5rem; color:#facc15; font-weight:800; margin-bottom:0.5rem; }
+        .enrolled-card p { color: var(--text-muted); font-size:0.95rem; }
+        .badge { display:inline-flex; align-items:center; gap:0.4rem; padding:0.5rem 1.2rem; border-radius:25px; font-size:0.8rem; font-weight:600; margin-top:0.5rem; }
+        .badge-active  { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+        .badge-pending { background:rgba(251,191,36,0.15);  color:#f59e0b; border:1px solid rgba(251,191,36,0.3); }
+        .no-course { background: var(--card-bg); border-radius:24px; padding:4rem 3rem; text-align:center; border:2px dashed var(--border); margin-bottom:2.5rem; }
+        .no-course i { font-size:5rem; color:#facc15; margin-bottom:2rem; display:block; }
+        .no-course h3 { color: #f8fafc; font-size:1.8rem; margin-bottom:1rem; font-weight:800; }
+        .no-course p  { color: var(--text-muted); font-size:1.1rem; margin-bottom:2rem; }
+        .progress-card { background: var(--card-bg); border-radius:24px; padding:2.5rem; border:1px solid var(--border); box-shadow: var(--shadow); margin-bottom:2.5rem; }
+        .progress-card .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-weight:600; }
+        .progress-card .top strong { color: #f8fafc; font-size:1.2rem; }
+        .progress-labels { text-align:center; color: var(--text-muted); font-size:0.9rem; margin-top:1rem; }
+        .section-label { font-size:1.1rem; font-weight:700; color:#facc15; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .lesson-list { display:flex; flex-direction:column; gap:12px; }
+        .lesson-card { background:rgba(30,41,59,0.9); border-radius:14px; padding:20px 22px; display:flex; align-items:center; gap:18px; box-shadow:0 2px 8px rgba(0,0,0,0.3); border-left:4px solid rgba(255,255,255,0.08); flex-wrap:wrap; }
+        .lesson-card.done    { border-left-color:#10b981; }
+        .lesson-card.current { border-left-color:#facc15; }
+        .lesson-card.locked  { border-left-color:rgba(255,255,255,0.08); opacity:0.5; }
+        .lesson-num { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; flex-shrink:0; }
+        .lesson-num.done    { background:#d1fae5; color:#059669; }
+        .lesson-num.current { background:rgba(250,204,21,0.2); color:#facc15; }
+        .lesson-num.locked  { background:rgba(255,255,255,0.05); color:#64748b; }
+        .lesson-info { flex:1; min-width:180px; }
+        .lesson-info h4 { color:#f8fafc; font-size:0.97rem; margin-bottom:3px; }
+        .lesson-info p  { color:#64748b; font-size:0.82rem; }
+        .lesson-tag { padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:600; white-space:nowrap; }
+        .lesson-tag.done    { background:#d1fae5; color:#059669; }
+        .lesson-tag.current { background:rgba(250,204,21,0.15); color:#facc15; }
+        .lesson-tag.locked  { background:rgba(255,255,255,0.05); color:#64748b; }
+        .dash-profile-grid{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            width: 100%;
+        }
+        .dash-profile-grid .profile-card{ grid-column: 1 / -1; }
+
+        .profile-card { background: var(--card-bg); border-radius:24px; padding:3rem 2.5rem; border:1px solid var(--border); box-shadow: var(--shadow); }
+        .profile-card .p-top { display:flex; align-items:center; gap:1.5rem; padding-bottom:2rem; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+        .profile-card .p-top h3 { color: #f8fafc; font-size:1.4rem; font-weight:800; margin-bottom:0.25rem; }
+        .profile-card .p-top span { background: var(--success); color:white; padding:0.3rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:600; }
+        .p-row { display:flex; align-items:center; gap:1rem; padding:1.2rem 1.5rem; background:rgba(250,204,21,0.05); border-radius:16px; margin-bottom:1rem; }
+        .p-row i { background: linear-gradient(135deg,#facc15,#eab308); color:#1e293b; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+        .p-row .label { font-size:0.8rem; color: var(--text-muted); margin-bottom:0.25rem; font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+        .p-row .val   { color: #f8fafc; font-weight:600; font-size:1rem; }
+        .mobile-menu-btn { display:none; position:fixed; top:85px; left:1rem; z-index:1001; background: linear-gradient(135deg,#facc15,#eab308); color:#1e293b; border:none; border-radius:12px; padding:0.8rem; font-size:1.2rem; box-shadow: var(--shadow); cursor:pointer; }
+
+        /* ===== LESSON MODAL — FULLSCREEN ===== */
+        .lmodal-overlay { display:none; position:fixed; inset:0; background:#0f172a; z-index:9999; align-items:stretch; justify-content:stretch; padding:0; }
+        .modal-back-btn { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:#94a3b8; padding:7px 16px; border-radius:50px; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; margin-right:12px; }
+        .modal-back-btn:hover { background:rgba(250,204,21,0.1); border-color:rgba(250,204,21,0.3); color:#facc15; }
+        .lmodal-box { background:#0f172a; border-radius:0; width:100%; height:100vh; border:none; overflow-y:auto; display:flex; flex-direction:column; }
+        .lmodal-head { padding:20px 32px 0; display:flex; justify-content:space-between; align-items:flex-start; background:#0f172a; position:sticky; top:0; z-index:5; padding-bottom:0; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .lmodal-badge { font-size:0.72rem; font-weight:700; letter-spacing:1.2px; color:#facc15; text-transform:uppercase; margin-bottom:5px; }
+        .lmodal-title { color:#fff; font-size:1.4rem; font-weight:800; margin:0 0 3px; }
+        .lmodal-desc  { color:#64748b; font-size:0.85rem; padding-bottom:14px; }
+        .lmodal-close { background:rgba(255,255,255,0.07); border:none; color:#94a3b8; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-left:12px; transition:all 0.2s; }
+        .lmodal-close:hover { background:rgba(239,68,68,0.2); color:#ef4444; }
+        .lmodal-tabs { display:flex; padding:0 32px; border-bottom:1px solid rgba(255,255,255,0.07); background:#0f172a; position:sticky; top:88px; z-index:5; }
+        .lm-tab { padding:14px 24px; border:none; background:none; color:#64748b; font-weight:600; font-size:0.95rem; cursor:pointer; border-bottom:2px solid transparent; font-family:inherit; transition:all 0.2s; }
+        .lm-tab.active { color:#facc15; border-bottom-color:#facc15; }
+        .lm-panel { padding:32px; display:none; max-width:960px; margin:0 auto; width:100%; }
+        .lm-panel.active { display:block; }
+
+        /* Learn tab */
+        .learn-points-box { background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.15); border-radius:16px; padding:18px 20px; margin:14px 0; }
+        .learn-points-label { color:#facc15; font-weight:800; font-size:0.88rem; margin-bottom:12px; letter-spacing:0.5px; }
+        .lpt { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .lpt:last-child { border-bottom:none; }
+        .lpt-dot { width:7px; height:7px; border-radius:50%; background:#facc15; flex-shrink:0; margin-top:7px; }
+        .lpt span { color:#cbd5e1; font-size:0.88rem; line-height:1.6; }
+
+        /* Submodule cards */
+        .submod-tracker { display:flex; align-items:center; gap:10px; padding:12px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; margin-bottom:18px; }
+        .sdot { width:12px; height:12px; border-radius:50%; background:rgba(100,116,139,0.3); border:2px solid rgba(100,116,139,0.4); flex-shrink:0; transition:all 0.3s; }
+        .sdot.active { background:#facc15; border-color:#facc15; }
+        .sdot.done   { background:#10b981; border-color:#10b981; }
+        .sdot-line { height:2px; flex:1; background:rgba(255,255,255,0.06); border-radius:2px; }
+        .submod-count { color:#facc15; font-weight:700; font-size:0.88rem; margin-left:auto; white-space:nowrap; }
+
+        .submod-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px; margin-bottom:18px; transition:border-color 0.3s; }
+        .submod-card.watched { border-color:rgba(16,185,129,0.4); }
+        .submod-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+        .submod-title { color:#fff; font-weight:800; font-size:0.97rem; display:flex; align-items:center; gap:10px; }
+        .submod-num { background:rgba(250,204,21,0.15); color:#facc15; width:28px; height:28px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; flex-shrink:0; }
+        .vid-badge { font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.5px; transition:all 0.3s; }
+        .vid-badge.pending  { background:rgba(100,116,139,0.2); color:#64748b; border:1px solid rgba(100,116,139,0.3); }
+        .vid-badge.watching { background:rgba(250,204,21,0.15); color:#facc15; border:1px solid rgba(250,204,21,0.3); }
+        .vid-badge.done     { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+
+        .submod-video { width:100%; border-radius:12px; background:#020617; display:block; max-height:230px; object-fit:contain; margin-bottom:10px; }
+        .vpbar-wrap { height:5px; background:rgba(255,255,255,0.07); border-radius:5px; overflow:hidden; margin-bottom:14px; }
+        .vpbar-fill { height:100%; background:linear-gradient(90deg,#facc15,#eab308); border-radius:5px; transition:width 0.4s; width:0; }
+        .vpbar-fill.done { background:linear-gradient(90deg,#10b981,#059669); }
+
+        .submod-desc { color:#94a3b8; font-size:0.88rem; line-height:1.65; margin-bottom:14px; }
+        .res-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 15px; border-radius:10px; text-decoration:none; font-size:0.83rem; font-weight:600; transition:all 0.2s; margin-right:8px; margin-top:4px; }
+        .res-btn.pdf  { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); color:#ef4444; }
+        .res-btn.link { background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); color:#facc15; }
+        .res-btn:hover { filter:brightness(1.2); }
+
+        /* Mark done area */
+        .mark-done-area { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px 20px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; margin-top:22px; }
+        .mark-done-info { color:#64748b; font-size:0.87rem; line-height:1.5; }
+
+        /* Resources tab */
+        .res-card { display:flex; align-items:center; gap:14px; padding:15px 18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:13px; margin-bottom:11px; text-decoration:none; transition:all 0.2s; }
+        .res-card:hover { border-color:rgba(250,204,21,0.3); background:rgba(250,204,21,0.04); }
+        .res-card-icon { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+        .res-card-icon.pdf  { background:rgba(239,68,68,0.15); color:#ef4444; }
+        .res-card-icon.link { background:rgba(99,102,241,0.15); color:#6366f1; }
+        .res-card-text h4 { color:#fff; font-size:0.9rem; font-weight:700; margin-bottom:2px; }
+        .res-card-text p  { color:#64748b; font-size:0.78rem; }
+        .res-card-arrow { color:#334155; margin-left:auto; font-size:0.85rem; }
+
+        /* ===== QUIZ MODAL — FULLSCREEN ===== */
+        .qmodal-overlay { display:none; position:fixed; inset:0; background:#1e293b; z-index:9999; align-items:stretch; justify-content:stretch; padding:0; overflow-y:auto; }
+        .qmodal-box { background:#1e293b; border-radius:0; width:100%; min-height:100vh; border:none; max-width:100%; display:flex; flex-direction:column; }
+        .im-question-card { border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:18px; margin-bottom:18px; background:rgba(255,255,255,0.03); }
+        .im-question-card.active { box-shadow:0 0 0 2px rgba(250,204,21,0.22); border-color:rgba(250,204,21,0.3); }
+        .im-question-card h4 { margin-bottom:12px; color:#f8fafc; }
+        .im-question-card .im-question-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px; }
+        .im-question-card textarea { min-height:120px; }
+        .qmodal-head { padding:24px 40px 0; display:flex; justify-content:space-between; align-items:flex-start; position:sticky; top:0; background:#1e293b; z-index:5; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:16px; }
+        .qmodal-badge { font-size:0.75rem; font-weight:700; letter-spacing:1px; color:#facc15; text-transform:uppercase; margin-bottom:6px; }
+        .qmodal-title { color:#fff; font-size:1.5rem; font-weight:800; margin:0; }
+        .qmodal-close { background:rgba(255,255,255,0.08); border:none; color:#94a3b8; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-left:12px; }
+        .qmodal-body { padding:32px 40px 40px; max-width:760px; margin:0 auto; width:100%; flex:1; }
+        .q-block { margin-bottom:22px; }
+        .q-block p { color:#fff; font-size:0.95rem; margin-bottom:12px; font-weight:500; }
+        .q-opt { padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); color:#cbd5e1; cursor:pointer; font-size:0.88rem; transition:all 0.2s; background:rgba(255,255,255,0.04); margin-bottom:8px; }
+        .q-opt:hover   { border-color:#facc15; color:#facc15; }
+        .q-opt.sel     { border-color:#facc15; background:rgba(250,204,21,0.1); color:#facc15; }
+        .q-opt.correct { border-color:#10b981; background:rgba(16,185,129,0.15); color:#10b981; }
+        .q-opt.wrong   { border-color:#ef4444; background:rgba(239,68,68,0.1); color:#ef4444; }
+        .q-result { text-align:center; padding:20px 0; }
+        .q-result-score { font-size:2.5rem; font-weight:800; color:#facc15; }
+        .q-result-msg   { color:#94a3b8; margin:8px 0 0; font-size:0.95rem; }
+        .qmodal-footer { display:flex; gap:12px; justify-content:flex-end; margin-top:24px; }
+
+        @media(max-width:768px) {
+            .mobile-menu-btn { display:block; }
+            .dash-wrapper { grid-template-columns:1fr; }
+            .dash-sidebar { position:fixed; left:-280px; top:70px; width:280px; height:calc(100vh - 70px); z-index:1000; transition:left 0.3s; }
+            .dash-sidebar.open { left:0; }
+            .stats-row { grid-template-columns:1fr; }
+            .dash-main { padding:1.5rem; padding-top:5rem; }
+            .enrolled-card { flex-direction:column; align-items:flex-start; }
+            .lm-panel, .lmodal-head, .lmodal-tabs, .qmodal-head, .qmodal-body { padding-left:18px; padding-right:18px; }
+            .lm-tab { padding:12px 14px; font-size:0.82rem; }
+        }
+        /* Course selector tabs */
+        .course-tabs { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px; }
+        .course-tab-btn { padding:10px 20px; border-radius:50px; border:2px solid rgba(250,204,21,0.25); background:rgba(30,41,59,0.8); color:#94a3b8; font-weight:600; font-size:0.88rem; cursor:pointer; transition:all 0.2s; font-family:inherit; }
+        .course-tab-btn:hover { border-color:#facc15; color:#facc15; }
+        .course-tab-btn.active { background:linear-gradient(135deg,#facc15,#eab308); border-color:transparent; color:#1e293b; box-shadow:0 4px 15px rgba(250,204,21,0.35); }
+        /* ── LIGHT THEME OVERRIDES for dashboard ── */
+        [data-theme='light'] .dash-sidebar {
+            background: rgba(200,206,228,0.97);
+            border-right-color: rgba(15,23,42,0.12);
+        }
+        [data-theme='light'] .dash-sidebar-profile { border-bottom-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .dash-sidebar-profile h3 { color: #0f172a; }
+        [data-theme='light'] .dash-sidebar-profile span { color: #334155; }
+        [data-theme='light'] .dash-nav a { color: #334155; }
+        [data-theme='light'] .dash-nav a:hover,
+        [data-theme='light'] .dash-nav a.active { background: rgba(250,204,21,0.15); color: #b45309; }
+        [data-theme='light'] .dash-logout { border-top-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .dash-main { background: #dde1f0; }
+        [data-theme='light'] .dash-greeting { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .dash-greeting p { color: #334155; }
+        [data-theme='light'] .stat-card { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .stat-content h3 { color: #0f172a; }
+        [data-theme='light'] .stat-content p { color: #334155; }
+        [data-theme='light'] .enrolled-card { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .enrolled-card p { color: #334155; }
+        [data-theme='light'] .no-course { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.15); }
+        [data-theme='light'] .no-course h3 { color: #0f172a; }
+        [data-theme='light'] .no-course p { color: #334155; }
+        [data-theme='light'] .progress-card { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .progress-card .top strong { color: #0f172a; }
+        [data-theme='light'] .progress-labels { color: #334155; }
+        [data-theme='light'] .lesson-card { background: rgba(190,198,222,0.9); border-left-color: rgba(15,23,42,0.15); }
+        [data-theme='light'] .lesson-card.done { border-left-color: #10b981; }
+        [data-theme='light'] .lesson-card.current { border-left-color: #facc15; }
+        [data-theme='light'] .lesson-info h4 { color: #0f172a; }
+        [data-theme='light'] .lesson-info p { color: #475569; }
+        [data-theme='light'] .profile-card { background: rgba(200,206,228,0.9); border-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .profile-card .p-top h3 { color: #0f172a; }
+        [data-theme='light'] .profile-card .p-top { border-bottom-color: rgba(15,23,42,0.1); }
+        [data-theme='light'] .p-row { background: rgba(250,204,21,0.08); }
+        [data-theme='light'] .p-row .label { color: #475569; }
+        [data-theme='light'] .p-row .val { color: #0f172a; }
+        [data-theme='light'] .course-tab-btn { background: rgba(190,198,222,0.8); color: #334155; border-color: rgba(250,204,21,0.3); }
+        [data-theme='light'] .course-tab-btn:hover { color: #b45309; }
+        /* Centered content wrapper used by Overview, My Course and Profile */
+       #tab-mycourse.active {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+
+#myCourseContent{
+    width: 100%;
+}
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo"><h2><i class="fas fa-university"></i> Nexlify</h2></div>
+        <ul class="nav-menu">
+            <li><a href="home.html" class="nav-link">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="courses.html" class="nav-link">Courses</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+            <li class="nav-auth"></li><li class="nav-auth"></li>
+        </ul>
+        <div class="nav-buttons"><button id="theme-toggle" title="Toggle Dark/Light Mode"></button></div>
+        <div class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+    </div>
+</nav>
+
+<button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+<div class="dash-wrapper">
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-profile">
+            <div class="dash-avatar" id="sideAvatar">?</div>
+            <h3 id="sideName">Student</h3>
+            <span id="sideEmail"></span>
+        </div>
+        <nav class="dash-nav">
+            <a href="#" id="nav-overview"><i class="fas fa-th-large"></i> Overview</a>
+            <a href="#" id="nav-mycourse"><i class="fas fa-book-open"></i> My Course</a>
+            <a href="#" id="nav-tasks"><i class="fas fa-tasks"></i> Tasks</a>
+            <a href="#" id="nav-profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="interview.html"><i class="fas fa-robot"></i> AI Interview</a>
+        </nav>
+        
+        <!-- Sidebar course modules panel (hidden by default) -->
+        <div id="sidebarCourseContent" style="display:none;margin-top:18px;border-top:1px solid rgba(255,255,255,0.04);padding-top:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div style="font-weight:700;color:#facc15;">My Course Modules</div>
+                <button id="closeSidebarCourse" class="btn" style="background:none;border:1px solid rgba(255,255,255,0.06);color:#94a3b8;border-radius:8px;padding:6px 10px;">Close</button>
+            </div>
+            <div id="sidebarCourseModules" style="max-height:50vh;overflow:auto;padding-right:6px;"></div>
+        </div>
+        <div style="background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.18);border-radius:16px;padding:1rem;margin-bottom:1rem;color:#f8fafc;">
+            <strong style="display:block;margin-bottom:0.4rem;color:#facc15;">Interview Practice</strong>
+            Try live AI questions, submit answers, and get instant scoring with admin review.
+        </div>
+        <div class="dash-logout">
+            <a href="#" id="sideLogout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <main class="dash-main">
+        <div id="tab-overview" class="dash-section active">
+            <div class="dash-greeting">
+                <h1>Welcome back, <span id="greetName">Student</span>! 👋</h1>
+                <p>Here's your learning progress at Nexlify.</p>
+                <div style="margin-top:1.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem;">
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:1.2rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.8rem;"><span style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(250,204,21,0.18);color:#facc15;"><i class="fas fa-robot"></i></span><strong style="font-size:0.96rem;">AI Interview Practice</strong></div>
+                        <p style="color:#cbd5e1;font-size:0.92rem;line-height:1.6;">Launch a camera and mic-enabled mock interview, answer questions with your voice, and save results for admin feedback.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:1.2rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.8rem;"><span style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(16,185,129,0.18);color:#10b981;"><i class="fas fa-chart-line"></i></span><strong style="font-size:0.96rem;">Instant Score & Feedback</strong></div>
+                        <p style="color:#cbd5e1;font-size:0.92rem;line-height:1.6;">Receive an immediate score after each interview and review AI-driven feedback to improve your responses.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:1.2rem;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.8rem;"><span style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(59,130,246,0.18);color:#60a5fa;"><i class="fas fa-user-check"></i></span><strong style="font-size:0.96rem;">Admin Review</strong></div>
+                        <p style="color:#cbd5e1;font-size:0.92rem;line-height:1.6;">Your mock interview is recorded in the system so admins can track progress and provide review notes.</p>
+                    </div>
+                </div>
+               
+            </div>
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-book"></i></div><div class="stat-content"><h3 id="statCourse">0</h3><p>Courses Enrolled</p></div></div>
+                <div class="stat-card"><div class="stat-icon success"><i class="fas fa-check-circle"></i></div><div class="stat-content"><h3 id="statDone">0</h3><p>Lessons Completed</p></div></div>
+                <div class="stat-card"><div class="stat-icon accent"><i class="fas fa-clock"></i></div><div class="stat-content"><h3 id="statLeft">0</h3><p>Lessons Remaining</p></div></div>
+            </div>
+            <div class="section-label"><i class="fas fa-graduation-cap"></i> Enrolled Course</div>
+            <div id="overviewCourse"></div>
+            <div id="overviewProgress"></div>
+            <div class="section-label"><i class="fas fa-certificate"></i> My Certificates</div>
+            <div id="overviewCertificates"></div>
+            <div class="enrolled-card" style="grid-column:1/-1;display:flex;flex-direction:column;gap:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                    <div>
+                        <h2 style="font-size:1.4rem;color:#facc15;margin-bottom:0.5rem;">Interview Readiness Tasks</h2>
+                        <p style="color:#94a3b8;max-width:700px;line-height:1.7;">Your assigned tasks are available in the Tasks section. Click the Tasks button in the sidebar to open them.</p>
+                    </div>
+                    <button class="btn-primary" onclick="document.getElementById('nav-tasks').click();" style="padding:0.95rem 1.8rem;white-space:nowrap;">Open Tasks</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-tasks" class="dash-section">
+            <div class="dash-greeting">
+                <h1>Assigned Tasks <i class="fas fa-tasks" style="color:#facc15"></i></h1>
+                <p>Your tasks are filtered by the course(s) you are enrolled in. Upload a file or type your answer and submit for admin review.</p>
+            </div>
+            <div class="enrolled-card" id="studentTasksWrapper" style="grid-column:1/-1;display:flex;flex-direction:column;gap:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                    <div>
+                        <h2 style="font-size:1.4rem;color:#facc15;margin-bottom:0.5rem;">Assigned Tasks</h2>
+                        <p style="color:#94a3b8;max-width:700px;line-height:1.7;">Only tasks for your enrolled course(s) will be displayed here.</p>
+                    </div>
+                    <button class="btn-outline" onclick="loadStudentTasks()" style="padding:0.95rem 1.8rem;white-space:nowrap;">Refresh Tasks</button>
+                </div>
+                <div id="studentTasksContainer" style="margin-top:1.2rem;"></div>
+            </div>
+        </div>
+
+        <div id="tab-interview" class="dash-section">
+                <div>
+                    <h2 style="font-size:1.4rem;color:#facc15;margin-bottom:0.5rem;">AI Live Interview Experience</h2>
+                    <p style="color:#94a3b8;max-width:700px;line-height:1.7;">Attend a live mock interview with camera and microphone enabled. The AI will ask questions, you answer by voice, and your score is shared with the admin dashboard.</p>
+                    <div style="margin-top:0.75rem;color:#cbd5e1;font-size:0.95rem;">Latest score: <strong id="latestInterviewScore">No attempts yet</strong></div>
+                </div>
+                <div style="display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:flex-end;">
+                    <a href="interview.html" class="btn-primary" style="padding:0.95rem 1.8rem;white-space:nowrap;text-decoration:none;">Start Mock Interview</a>
+                </div>
+        </div>
+
+        <div id="tab-mycourse" class="dash-section">
+            <div class="dash-greeting">
+                <h1>My Course <i class="fas fa-book-open" style="color:#facc15"></i></h1>
+                <p>Your enrolled course lessons and progress.</p>
+            </div>
+           <div id="myCourseContent"></div>
+        </div>
+
+        <div id="tab-profile" class="dash-section">
+            <div class="dash-greeting">
+                <h1>My Profile <i class="fas fa-user" style="color:#facc15"></i></h1>
+                <p>Your account information and learning achievements.</p>
+            </div>
+                <div class="dash-profile-grid"></div>
+
+                <!-- Profile Card -->
+                <div class="profile-card" style="grid-column:1/-1;">
+                    <div class="p-top" style="position:relative;">
+                        <div style="position:relative;">
+                            <div class="dash-avatar" id="profAvatar" style="width:80px;height:80px;font-size:2rem;flex-shrink:0;">?</div>
+                            <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;background:#10b981;border-radius:50%;border:2px solid #1e293b;"></div>
+                        </div>
+                        <div style="flex:1;">
+                            <h3 id="profName" style="font-size:1.5rem;"></h3>
+                            <span id="profRole" style="text-transform:capitalize;"></span>
+                            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                                <span id="prof-badge-course" style="background:rgba(250,204,21,0.15);color:#facc15;border:1px solid rgba(250,204,21,0.3);padding:3px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;"></span>
+                                <span id="prof-badge-status" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);padding:3px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">🟢 Active</span>
+                            </div>
+                        </div>
+                        <a href="courses.html" class="btn-primary" style="padding:0.5rem 1.2rem;font-size:0.85rem;white-space:nowrap;"><i class="fas fa-plus"></i> Enroll More</a>
+                    </div>
+                    <div class="p-row"><i class="fas fa-envelope"></i><div><div class="label">Email</div><div class="val" id="profEmail"></div></div></div>
+                    <div class="p-row"><i class="fas fa-phone"></i><div><div class="label">Phone</div><div class="val" id="profPhone"></div></div></div>
+                    <div class="p-row"><i class="fas fa-book-open"></i><div><div class="label">Enrolled Course(s)</div><div class="val" id="profCourse">None</div></div></div>
+                    <div class="p-row"><i class="fas fa-calendar-alt"></i><div><div class="label">Member Since</div><div class="val" id="profJoined">—</div></div></div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div style="background:var(--card-bg);border-radius:20px;padding:1.8rem;border:1px solid var(--border);text-align:center;">
+                    <div style="font-size:2.5rem;font-weight:800;background:var(--primary);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;" id="profStatLessons">0</div>
+                    <div style="color:#94a3b8;font-size:0.85rem;margin-top:4px;">Lessons Completed</div>
+                    <div style="margin-top:12px;font-size:1.8rem;">📚</div>
+                </div>
+                <div style="background:var(--card-bg);border-radius:20px;padding:1.8rem;border:1px solid var(--border);text-align:center;">
+                    <div style="font-size:2.5rem;font-weight:800;color:#10b981;" id="profStatQuizzes">0</div>
+                    <div style="color:#94a3b8;font-size:0.85rem;margin-top:4px;">Quizzes Passed</div>
+                    <div style="margin-top:12px;font-size:1.8rem;">🏆</div>
+                </div>
+
+                <!-- Progress Card -->
+                <div style="background:var(--card-bg);border-radius:20px;padding:1.8rem;border:1px solid var(--border);grid-column:1/-1;">
+                    <div style="color:#facc15;font-weight:700;font-size:1rem;margin-bottom:16px;"><i class="fas fa-chart-line" style="margin-right:8px;"></i>Course Progress</div>
+                    <div id="profProgressBars"><div style="color:#64748b;font-size:0.9rem;">No courses enrolled yet.</div></div>
+                </div>
+
+                <!-- Achievements Card -->
+                <div style="background:var(--card-bg);border-radius:20px;padding:1.8rem;border:1px solid var(--border);grid-column:1/-1;">
+                    <div style="color:#facc15;font-weight:700;font-size:1rem;margin-bottom:16px;"><i class="fas fa-medal" style="margin-right:8px;"></i>Achievements</div>
+                    <div id="profAchievements" style="display:flex;flex-wrap:wrap;gap:12px;"></div>
+                </div>
+
+        </div>
+    </main>
+</div>
+
+<div id="interviewModal" class="lmodal-overlay" style="display:none;">
+    <div class="lmodal-box" style="max-width:920px;min-height:auto;padding:0;">
+        <div class="lmodal-head" style="padding:24px 32px 0;">
+            <div>
+                
+                <div class="lmodal-badge">AI Mock Interview</div>
+                <h2 class="lmodal-title" style="margin-bottom:10px;">Practice your answers with a guided interview</h2>
+                <p class="lmodal-desc">Choose a topic, answer 4 practical questions, and submit your responses. The admin dashboard will receive your score and feedback.</p>
+            </div>
+            <div style="display:flex;align-items:center;flex-shrink:0;margin-left:12px;">
+                <button class="modal-back-btn" onclick="closeInterviewModal()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+                <button class="lmodal-close" onclick="closeInterviewModal()">✕</button>
+            </div>
+        </div>
+        <div style="padding:32px;">
+            <div id="im-intro">
+                <div style="margin-bottom:1.2rem;">
+                    <label for="im-course-select" style="color:#94a3b8;font-size:0.88rem;font-weight:600;margin-bottom:0.5rem;display:block;">Interview Topic</label>
+                    <select id="im-course-select" style="width:100%;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#fff;font-family:inherit;font-size:0.95rem;">
+                        <option>Full Stack Development</option>
+                        <option>AI & Machine Learning</option>
+                        <option>Cyber Security</option>
+                        <option>UI/UX Design</option>
+                        <option>Digital Marketing</option>
+                        <option>Project Management</option>
+                    </select>
+                </div>
+                    <button id="im-start-btn" class="btn-primary" onclick="startInterview()" style="padding:0.95rem 1.8rem;">Start Live Interview</button>
+                <div style="margin-top:12px;color:#94a3b8;font-size:0.85rem;line-height:1.6;">After each answer, you’ll submit the response one question at a time and get instant feedback.</div>
+                <div id="im-media-panel" style="display:none;margin-top:1.6rem;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:18px;background:rgba(255,255,255,0.03);">
+                    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+                        <div style="flex:1;min-width:260px;">
+                            <div style="position:relative;border-radius:18px;overflow:hidden;background:#000;min-height:190px;">
+                                <video id="im-video-preview" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;background:#000;"></video>
+                                <div style="position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,0.6);color:#f8fafc;font-size:0.78rem;">Live interview preview</div>
+                            </div>
+                        </div>
+                        <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:12px;">
+                            <div style="font-size:0.9rem;color:#f8fafc;font-weight:700;">Camera & Microphone Status</div>
+                            <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                                <span id="im-camera-status" style="display:inline-flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:0.88rem;">Camera: Off</span>
+                                <span id="im-mic-status" style="display:inline-flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:0.88rem;">Mic: Off</span>
+                            </div>
+                            <div style="color:#94a3b8;font-size:0.9rem;line-height:1.6;">Allow camera and microphone so the AI interviewer can ask questions and capture your spoken responses. If speech recognition is unavailable, type your answer in the text box.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="im-questions" style="display:none;">
+                <div style="margin-bottom:1rem;color:#94a3b8;font-size:0.95rem;">The AI interviewer will speak each question. Use the record button to answer with your microphone, then submit this answer.</div>
+                <div id="im-questions-list"></div>
+                <div style="display:flex;justify-content:flex-end;gap:0.85rem;flex-wrap:wrap;margin-top:18px;">
+                <div style="margin-bottom:10px;color:#94a3b8;font-size:0.85rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <span id="im-progress-label" style="font-weight:700;color:#facc15;">Question 1 of 4</span>
+                        <span id="im-timer-label" style="font-weight:700;color:#f8fafc;">⏱️ 60s</span>
+                        <span style="margin-left:auto;color:#94a3b8;font-size:0.8rem;" id="im-status-indicator">One-by-one mode</span>
+                    </div>
+                    <button class="res-btn link" onclick="resetInterview();" style="padding:0.85rem 1.25rem;">Start Over</button>
+                    <button id="im-submit-btn" class="btn-primary" onclick="submitInterview()" style="padding:0.85rem 1.6rem;">Submit Answer</button>
+                </div>
+            </div>
+            <div id="im-result" style="display:none;">
+                <div id="im-result-summary"></div>
+                <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:24px;">
+                    <button class="res-btn pdf" onclick="downloadInterviewPDF()"><i class="fas fa-file-pdf"></i> Download Report</button>
+                    <button class="btn-primary" onclick="resetInterview();" style="padding:0.95rem 1.8rem;">Practice Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== LESSON MODAL ==================== -->
+<div id="lessonModal" class="lmodal-overlay">
+    <div class="lmodal-box">
+        <div class="lmodal-head">
+            <div>
+                <div class="lmodal-badge" id="lm-badge"></div>
+                <h2 class="lmodal-title" id="lm-title"></h2>
+                <p class="lmodal-desc" id="lm-desc"></p>
+            </div>
+            <div style="display:flex;align-items:center;flex-shrink:0;margin-left:12px;">
+                <button class="modal-back-btn" onclick="closeLessonModal()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+                <button class="lmodal-close" onclick="closeLessonModal()">✕</button>
+            </div>
+        </div>
+        <div class="lmodal-tabs">
+            <button class="lm-tab active" id="ltab-learn"      onclick="switchLMTab('learn')">📖 Learn</button>
+            <button class="lm-tab"        id="ltab-submodules" onclick="switchLMTab('submodules')">🎬 Submodules</button>
+            <button class="lm-tab"        id="ltab-resources"  onclick="switchLMTab('resources')">📚 Resources</button>
+        </div>
+        <div class="lm-panel active" id="lpanel-learn">
+            <div id="lm-learn-content"></div>
+            <div style="text-align:right;margin-top:18px;">
+                <button class="btn-primary" style="padding:0.7rem 1.8rem;" onclick="switchLMTab('submodules')">Go to Submodules →</button>
+            </div>
+        </div>
+        <div class="lm-panel" id="lpanel-submodules">
+            <div id="lm-tracker"></div>
+            <div id="lm-submod-cards"></div>
+            <div class="mark-done-area">
+                <div class="mark-done-info" id="lm-done-info"><i class="fas fa-info-circle" style="margin-right:6px;"></i>Watch both videos completely to unlock this button</div>
+                <button id="lm-done-btn" class="btn-primary" style="display:none;padding:0.7rem 1.6rem;" onclick="doMarkLessonDone()"><i class="fas fa-check"></i> Mark Lesson as Done</button>
+            </div>
+        </div>
+        <div class="lm-panel" id="lpanel-resources">
+            <div id="lm-resources-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== QUIZ MODAL ==================== -->
+<div id="quizModal" class="qmodal-overlay">
+    <div class="qmodal-box">
+        <div class="qmodal-head">
+            <div>
+                <div class="qmodal-badge" id="qm-badge"></div>
+                <h2 class="qmodal-title" id="qm-title"></h2>
+            </div>
+            <div style="display:flex;align-items:center;flex-shrink:0;margin-left:12px;">
+                <button class="modal-back-btn" onclick="closeQuizModal()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
+                <button class="qmodal-close" onclick="closeQuizModal()">✕</button>
+            </div>
+        </div>
+        <div class="qmodal-body">
+            <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:20px;">Answer all questions. Score <strong style="color:#facc15;">67%+</strong> to pass and unlock the next module.</p>
+            <div id="qm-questions"></div>
+            <div id="qm-result" style="display:none;" class="q-result"></div>
+            <div class="qmodal-footer">
+                <button onclick="closeQuizModal()" style="padding:0.7rem 1.4rem;border-radius:50px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#94a3b8;cursor:pointer;font-family:inherit;font-size:0.9rem;">Close</button>
+                <button id="qm-submit" onclick="submitQuiz()" class="btn-primary" style="padding:0.7rem 1.5rem;">Submit Answers</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const user = _u;
+
+const COURSE_LESSONS = {
+    'Full Stack Development': [
+        { week:1, topic:'HTML & CSS Fundamentals', desc:'Structure, styling, flexbox, grid layouts', pdf:'https://www.w3schools.com/html/html_intro.asp',
+          points:['HTML5 semantic tags: header, section, article, footer','CSS Box Model: margin, border, padding, content','Flexbox: justify-content, align-items, flex-wrap','CSS Grid: grid-template-columns, grid-gap','Responsive design with media queries','CSS variables and custom properties'] },
+        { week:2, topic:'JavaScript Basics', desc:'Variables, functions, DOM manipulation', pdf:'https://javascript.info/',
+          points:['var vs let vs const — scope differences','Arrow functions and callback functions','DOM selection: getElementById, querySelector','Event listeners: click, submit, keyup','ES6 features: template literals, destructuring','Array methods: map, filter, reduce'] },
+        { week:3, topic:'React.js Introduction', desc:'Components, props, state management', pdf:'https://react.dev/learn',
+          points:['JSX syntax and how it compiles','Functional vs class components','Props: passing data between components','useState hook for local state','useEffect hook for side effects','Component lifecycle and re-rendering'] },
+        { week:4, topic:'Node.js & Express', desc:'Server setup, REST APIs, middleware', pdf:'https://expressjs.com/en/guide/routing.html',
+          points:['Node.js event loop and non-blocking I/O','Setting up an Express server','REST API methods: GET, POST, PUT, DELETE','Middleware: express.json(), cors(), custom','Route parameters and query strings','Error handling middleware'] },
+        { week:5, topic:'MongoDB & Mongoose', desc:'Database design, CRUD operations', pdf:'https://mongoosejs.com/docs/guide.html',
+          points:['MongoDB document model vs relational tables','Connecting MongoDB with Mongoose','Schema definition and data types','CRUD: create, find, findById, updateOne, deleteOne','Mongoose validation and default values','Indexing for performance'] },
+        { week:6, topic:'Authentication & JWT', desc:'Login systems, tokens, security', pdf:'https://jwt.io/introduction',
+          points:['Password hashing with bcrypt','JWT structure: header, payload, signature','Signing and verifying tokens','Storing JWT in localStorage vs httpOnly cookie','Protected routes with middleware','Refresh token strategy'] },
+        { week:7, topic:'Cloud Deployment', desc:'AWS/Heroku deployment, CI/CD basics', pdf:'https://devcenter.heroku.com/articles/getting-started-with-nodejs',
+          points:['Environment variables and .env files','Deploying Node.js app to Heroku/Render','AWS EC2 basics and SSH access','Nginx as reverse proxy','GitHub Actions for CI/CD pipeline','SSL certificates and HTTPS setup'] },
+        { week:8, topic:'Capstone Project', desc:'Build and deploy a full stack application', pdf:'https://github.com/topics/mern-stack',
+          points:['Project planning and folder structure','Connecting React frontend to Express backend','Authentication flow end-to-end','Database schema design for the project','Deployment to production','Code review best practices'] }
+    ],
+    'Cyber Security': [
+        { week:1, topic:'Network Security Basics', desc:'OSI model, protocols, firewalls', pdf:'https://www.cisco.com/c/en/us/products/security/what-is-network-security.html',
+          points:['OSI 7 layers and their functions','TCP/IP protocol suite','Firewalls: packet filtering, stateful inspection','VPN tunneling protocols','Network scanning with Nmap','Common ports and services'] },
+        { week:2, topic:'Ethical Hacking', desc:'Penetration testing, vulnerability scanning', pdf:'https://www.offensive-security.com/metasploit-unleashed/',
+          points:['Phases of penetration testing: recon, scan, exploit','Kali Linux tools overview','Metasploit framework basics','Vulnerability scanning with Nessus','Social engineering techniques','Writing a pentest report'] },
+        { week:3, topic:'Web Application Security', desc:'OWASP Top 10, SQL injection, XSS', pdf:'https://owasp.org/www-project-top-ten/',
+          points:['OWASP Top 10 vulnerabilities list','SQL Injection: blind, error-based, union-based','Cross-Site Scripting (XSS): stored vs reflected','CSRF attacks and prevention tokens','Insecure Direct Object References (IDOR)','Security headers: CSP, HSTS, X-Frame-Options'] },
+        { week:4, topic:'Incident Response', desc:'Threat detection, forensics, reporting', pdf:'https://www.sans.org/white-papers/incident-handlers-handbook/',
+          points:['Incident response lifecycle: prepare, detect, contain','Log analysis with SIEM tools','Digital forensics: disk imaging, chain of custody','Malware analysis basics','Writing an incident report','Business continuity planning'] }
+    ],
+    'AI & Machine Learning': [
+        { week:1, topic:'Python for Data Science', desc:'NumPy, Pandas, data manipulation', pdf:'https://pandas.pydata.org/docs/getting_started/intro_tutorials/',
+          points:['NumPy arrays vs Python lists — performance','Array operations: reshape, slice, broadcasting','Pandas DataFrame: read_csv, head, describe','Data cleaning: dropna, fillna, duplicates','Groupby and aggregation functions','Data visualization with Matplotlib'] },
+        { week:2, topic:'Machine Learning Basics', desc:'Supervised & unsupervised learning', pdf:'https://scikit-learn.org/stable/tutorial/basic/tutorial.html',
+          points:['Supervised vs unsupervised vs reinforcement learning','Train/test split and cross-validation','Linear regression and gradient descent','Decision trees and random forests','K-Means clustering algorithm','Model evaluation: accuracy, precision, recall, F1'] },
+        { week:3, topic:'Deep Learning', desc:'Neural networks, TensorFlow, Keras', pdf:'https://www.tensorflow.org/tutorials',
+          points:['Perceptron and multi-layer neural networks','Activation functions: ReLU, sigmoid, softmax','Forward propagation and backpropagation','Building models with Keras Sequential API','Dropout and batch normalization','Saving and loading trained models'] },
+        { week:4, topic:'Computer Vision', desc:'Image processing, CNNs, OpenCV', pdf:'https://opencv.org/courses/',
+          points:['Image representation: pixels, channels, shapes','OpenCV: read, resize, convert color space','Convolutional layers and feature maps','Pooling layers: max pooling, average pooling','Transfer learning with VGG16, ResNet','Object detection with YOLO basics'] },
+        { week:5, topic:'NLP Fundamentals', desc:'Text processing, transformers, BERT', pdf:'https://huggingface.co/learn/nlp-course/chapter1/1',
+          points:['Tokenization and text preprocessing','Bag of Words and TF-IDF vectorization','Word embeddings: Word2Vec, GloVe','Transformer architecture: attention mechanism','BERT: pre-training and fine-tuning','Sentiment analysis and text classification'] },
+        { week:6, topic:'Model Deployment', desc:'Flask APIs, Docker, cloud hosting', pdf:'https://flask.palletsprojects.com/en/3.0.x/quickstart/',
+          points:['Building a REST API with Flask for ML models','Serializing models with pickle/joblib','Dockerizing a Python ML application','Pushing Docker image to Docker Hub','Deploying on AWS EC2 or Google Cloud Run','Monitoring model performance in production'] }
+    ],
+    'Digital Marketing': [
+        { week:1, topic:'SEO & SEM', desc:'Keyword research, Google Ads, ranking', pdf:'https://developers.google.com/search/docs/fundamentals/seo-starter-guide',
+          points:['On-page SEO: title tags, meta descriptions, headings','Keyword research with Google Keyword Planner','Backlink building strategies','Google Ads campaign structure','Bidding strategies: CPC, CPM, CPA','Tracking conversions with Google Analytics'] },
+        { week:2, topic:'Social Media Marketing', desc:'Content strategy, paid campaigns', pdf:'https://buffer.com/library/social-media-marketing/',
+          points:['Content calendar planning','Platform-specific strategies: Instagram, LinkedIn, X','Facebook Ads Manager: audience targeting','A/B testing ad creatives','Influencer marketing basics','Analytics: reach, impressions, engagement rate'] },
+        { week:3, topic:'Email Marketing', desc:'Campaigns, automation, analytics', pdf:'https://mailchimp.com/resources/email-marketing-field-guide/',
+          points:['Building and segmenting email lists','Writing high-converting subject lines','Email automation workflows with Mailchimp','Drip campaigns and nurture sequences','Key metrics: open rate, CTR, bounce rate','GDPR compliance and unsubscribe handling'] },
+        { week:4, topic:'Brand Management', desc:'Brand identity, storytelling, PR', pdf:'https://www.hubspot.com/brand-kit-generator',
+          points:['Brand identity: logo, colors, typography, tone','Brand positioning and value proposition','Storytelling frameworks: hero journey, problem-solution','Press release writing basics','Crisis communication strategy','Measuring brand awareness with surveys'] }
+    ],
+    'UI/UX Design': [
+        { week:1, topic:'Design Principles', desc:'Color theory, typography, layout', pdf:'https://www.interaction-design.org/literature/topics/design-principles',
+          points:['Color wheel: primary, secondary, complementary colors','Typography hierarchy: H1 to body text','Gestalt principles: proximity, similarity, continuity','White space and visual breathing room','Grid systems: 8pt grid, 12-column layout','Accessibility: contrast ratios, WCAG guidelines'] },
+        { week:2, topic:'Figma Mastery', desc:'Wireframes, prototypes, components', pdf:'https://help.figma.com/hc/en-us/categories/360002051613',
+          points:['Figma workspace: frames, layers, groups','Auto layout for responsive components','Creating reusable component libraries','Prototyping: linking frames, transitions','Design tokens: colors, spacing, typography','Handoff to developers with inspect panel'] },
+        { week:3, topic:'User Research', desc:'User interviews, personas, journey maps', pdf:'https://www.nngroup.com/articles/ux-research-cheat-sheet/',
+          points:['Qualitative vs quantitative research methods','Conducting user interviews: open-ended questions','Creating user personas from research data','Empathy mapping: think, feel, say, do','User journey map: touchpoints, pain points','Usability testing and affinity diagrams'] }
+    ],
+    'Project Management': [
+        { week:1, topic:'Agile & Scrum', desc:'Sprints, standups, backlog grooming', pdf:'https://scrumguides.org/scrum-guide.html',
+          points:['Agile manifesto: 4 values and 12 principles','Scrum roles: Product Owner, Scrum Master, Dev Team','Sprint planning and sprint goal','Daily standup: what I did, what I will do, blockers','Sprint review and retrospective','Velocity and burndown charts'] },
+        { week:2, topic:'Kanban & Lean', desc:'Workflow visualization, WIP limits', pdf:'https://kanbanize.com/kanban-resources/getting-started/what-is-kanban',
+          points:['Kanban board columns: To Do, In Progress, Done','WIP limits and why they improve flow','Lead time vs cycle time','Lean principles: eliminate waste, amplify learning','Cumulative flow diagram','Continuous improvement (Kaizen)'] },
+        { week:3, topic:'Leadership Skills', desc:'Team management, conflict resolution', pdf:'https://www.mindtools.com/pages/article/newLDR_41.htm',
+          points:['Leadership styles: servant, transformational, transactional','Delegation matrix: urgent vs important','Conflict resolution: Thomas-Kilmann model','Giving and receiving constructive feedback','1-on-1 meeting best practices','Building psychological safety in teams'] },
+        { week:4, topic:'PMP Exam Prep', desc:'PMBOK guide, mock tests, certification', pdf:'https://www.pmi.org/certifications/project-management-pmp',
+          points:['PMBOK 7 principles and performance domains','Project lifecycle: initiating, planning, executing, closing','Risk management: identify, assess, respond, monitor','Earned Value Management: SPI, CPI, EAC','Stakeholder engagement strategies','PMP exam format: 180 questions, 230 minutes'] }
+    ]
+};
+
+// Per-course submodule descriptions for each of 3 lessons
+const SUBMODULE_DESC = {
+    'Full Stack Development': {
+        1:[
+            { title:'Module 1 — HTML Structure & Semantics', desc:'Master HTML5 semantic tags (header, main, section, article, footer) and understand how the DOM tree is structured. Learn why semantics matter for SEO, accessibility, and maintainability of your codebase.', link:'https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML' },
+            { title:'Module 2 — CSS Layouts: Flexbox & Grid', desc:'Deep dive into the CSS Box Model, then conquer Flexbox and CSS Grid — the two essential layout systems. Build real responsive layouts from scratch using flex-direction, justify-content, grid-template-columns, and media queries.', link:'https://css-tricks.com/snippets/css/a-guide-to-flexbox/' }
+        ],
+        2:[
+            { title:'Module 1 — JavaScript Core Concepts', desc:'Cover variables (var/let/const), data types, functions (regular and arrow), scope, and the event loop. Understand closures, hoisting, and how the JS engine works under the hood. Essential for every JS developer.', link:'https://javascript.info/first-steps' },
+            { title:'Module 2 — DOM Manipulation & Events', desc:'Learn to interact with HTML using querySelector, createElement, and removeChild. Attach event listeners (click, submit, keyup) and build dynamic UIs without any framework. Practice with a live to-do list project.', link:'https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model' }
+        ],
+        3:[
+            { title:'Module 1 — React Components & JSX', desc:'Understand what JSX compiles to and why React uses it. Build functional components, pass data via props, and learn component composition. Understand the difference between controlled and uncontrolled components.', link:'https://react.dev/learn/your-first-component' },
+            { title:'Module 2 — useState & useEffect Hooks', desc:'Master the two most important React hooks. Manage local state with useState and handle side effects with useEffect. Understand the dependency array, cleanup functions, and build a live API-fetching component.', link:'https://react.dev/reference/react/hooks' }
+        ]
+    },
+    'Cyber Security': {
+        1:[
+            { title:'Module 1 — OSI Model & TCP/IP', desc:'Walk through all 7 OSI layers and map them to the TCP/IP suite. Understand what happens at each layer — from physical signals to application data. Learn encapsulation, packet structure, and common protocols at each layer.', link:'https://www.cloudflare.com/learning/ddos/glossary/open-systems-interconnection-model-osi/' },
+            { title:'Module 2 — Firewalls, VPNs & Nmap', desc:'Explore how firewalls filter traffic using packet filtering and stateful inspection. Understand VPN tunneling protocols (OpenVPN, IPsec, WireGuard). Learn how attackers scan networks with Nmap and how defenders use it too.', link:'https://nmap.org/book/toc.html' }
+        ],
+        2:[
+            { title:'Module 1 — Pentest Phases & Tools', desc:'Follow the 5 phases: Reconnaissance, Scanning, Exploitation, Post-exploitation, Reporting. Use OSINT tools to gather intel, Nmap for scanning, and Metasploit for exploitation. Understand CVSS scoring for vulnerability severity.', link:'https://www.offensive-security.com/metasploit-unleashed/' },
+            { title:'Module 2 — Social Engineering & Reporting', desc:'Social engineering exploits human psychology, not technical flaws. Cover phishing, pretexting, baiting, and tailgating attacks. Learn to write a professional pentest report with executive summary, findings, risk ratings, and remediation steps.', link:'https://www.social-engineer.org/framework/general-discussion/' }
+        ],
+        3:[
+            { title:'Module 1 — OWASP Top 10 Attack Techniques', desc:'Examine the most critical web vulnerabilities in detail: SQL Injection (blind, error-based, union-based), XSS (stored vs reflected), CSRF, IDOR, and Security Misconfiguration. For each, understand the attack and how to test for it.', link:'https://owasp.org/www-project-top-ten/' },
+            { title:'Module 2 — Secure Coding & HTTP Security Headers', desc:'Learn to prevent injection with parameterized queries and input validation. Implement security headers: Content-Security-Policy, HSTS, X-Frame-Options, X-Content-Type-Options. Understand the SSL/TLS handshake and certificate validation.', link:'https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html' }
+        ]
+    },
+    'AI & Machine Learning': {
+        1:[
+            { title:'Module 1 — NumPy Arrays & Operations', desc:'NumPy is the backbone of data science in Python. Learn array creation, indexing, slicing, reshaping, and broadcasting. Understand why NumPy arrays are 50x faster than Python lists for numerical operations and when to use each.', link:'https://numpy.org/doc/stable/user/absolute_beginners.html' },
+            { title:'Module 2 — Pandas Data Analysis', desc:'Master DataFrames from the ground up: reading CSV files, exploring data with head/describe/info, handling missing values with dropna/fillna, and performing groupby aggregations. Visualize insights with Matplotlib and Seaborn.', link:'https://pandas.pydata.org/docs/getting_started/intro_tutorials/' }
+        ],
+        2:[
+            { title:'Module 1 — Regression & Classification', desc:'Build intuition for supervised learning. Implement linear regression from scratch with gradient descent, then use scikit-learn for decision trees and random forests. Understand the bias-variance tradeoff and when each algorithm excels.', link:'https://scikit-learn.org/stable/supervised_learning.html' },
+            { title:'Module 2 — Model Evaluation & Cross-Validation', desc:'A model is only as good as its evaluation. Learn k-fold cross-validation to prevent overfitting. Master metrics: accuracy, precision, recall, F1-score, and ROC-AUC. Read confusion matrices and choose the right metric for your problem.', link:'https://scikit-learn.org/stable/modules/model_evaluation.html' }
+        ],
+        3:[
+            { title:'Module 1 — Neural Networks & Backpropagation', desc:'Build a neural network from scratch. Understand how neurons connect, what activation functions (ReLU, sigmoid, softmax) do, and how forward propagation computes predictions. Master backpropagation — the algorithm that makes learning possible.', link:'https://www.3blue1brown.com/topics/neural-networks' },
+            { title:'Module 2 — Deep Learning with Keras', desc:'Use Keras to build, train and evaluate deep learning models in minutes. Learn the Sequential API, Dense and Dropout layers, batch normalization, and the fit/evaluate/predict workflow. Build and train a real image classifier on MNIST.', link:'https://keras.io/getting_started/' }
+        ]
+    },
+    'Digital Marketing': {
+        1:[
+            { title:'Module 1 — SEO Fundamentals', desc:'SEO determines whether your content gets found. Master on-page SEO: title tags, meta descriptions, header hierarchy, and keyword placement. Learn how Google crawls pages, what PageRank means, and how to use Google Search Console to track performance.', link:'https://developers.google.com/search/docs/fundamentals/seo-starter-guide' },
+            { title:'Module 2 — Google Ads & SEM Campaigns', desc:'Paid search puts you at the top instantly. Set up Google Ads with proper campaign structure (Campaign → Ad Group → Keywords → Ads). Understand CPC/CPM/CPA bidding strategies, Quality Score, and how to track conversions using GA4.', link:'https://support.google.com/google-ads/answer/6146252' }
+        ],
+        2:[
+            { title:'Module 1 — Content Strategy & Organic Social', desc:'Build a 30-day content calendar aligned with business goals. Understand platform algorithms: Instagram favors Reels, LinkedIn rewards text posts, X favors high-engagement threads. Learn the difference between organic reach and paid reach and how to grow both.', link:'https://blog.hootsuite.com/social-media-content-calendar-template/' },
+            { title:'Module 2 — Paid Social Campaigns & A/B Testing', desc:'Run high-converting ad campaigns using Facebook/Meta Ads Manager. Target audiences with demographic, interest, and lookalike targeting. Conduct A/B tests on creative, copy, and CTA. Measure CTR, CPM, ROAS, and use analytics to optimize spend.', link:'https://www.facebook.com/business/ads' }
+        ],
+        3:[
+            { title:'Module 1 — Email Campaigns & Automation', desc:'Email delivers the highest ROI of any marketing channel. Learn list segmentation, writing irresistible subject lines using power words and curiosity gaps, and designing clean email templates. Set up automated drip sequences and welcome flows in Mailchimp.', link:'https://mailchimp.com/resources/email-marketing-field-guide/' },
+            { title:'Module 2 — Analytics & GDPR Compliance', desc:'Measure open rate, CTR, bounce rate, unsubscribe rate, and conversion rate. Use A/B testing to optimize every element. Understand GDPR requirements: explicit consent, right to erasure, proper data storage, and legal unsubscribe handling procedures.', link:'https://gdpr.eu/email-marketing/' }
+        ]
+    },
+    'UI/UX Design': {
+        1:[
+            { title:'Module 1 — Color Theory & Typography', desc:'Color is the first thing users perceive. Master the color wheel: primary, secondary, complementary, and triadic palettes. Understand color psychology (blue=trust, orange=energy) and WCAG contrast ratios for accessibility. Then master typography: pairing, hierarchy, and line-height.', link:'https://www.interaction-design.org/literature/topics/color-theory' },
+            { title:'Module 2 — Layout, Grids & Visual Hierarchy', desc:"Gestalt principles explain how users naturally perceive groups of elements. Use proximity, similarity, and continuity to create intuitive layouts. Master the 8pt grid system and 12-column layout. Learn to guide a user's eye using size, contrast, weight, and whitespace.", link:'https://www.designsystems.com/space-grids-and-layouts/' }
+        ],
+        2:[
+            { title:'Module 1 — Wireframing & Prototyping in Figma', desc:"Figma is the industry-standard design tool. Learn the workspace: frames, layers, groups, and components. Build low-fidelity wireframes to map out information architecture before adding visual design. Create clickable prototypes by linking frames with transitions.", link:'https://help.figma.com/hc/en-us/articles/360040314193' },
+            { title:'Module 2 — Component Systems & Design Tokens', desc:'Professional design is built on systems. Create reusable components with variants in Figma. Use Auto Layout to build responsive components that adapt to content changes. Define design tokens — colors, spacing, typography — for consistency and seamless developer handoff.', link:'https://www.figma.com/community/file/827505828273513761' }
+        ],
+        3:[
+            { title:'Module 1 — User Research Methods', desc:'Great design starts with understanding real users. Learn qualitative methods (interviews, contextual inquiry) vs quantitative (surveys, analytics). Conduct user interviews with open-ended questions. Synthesize findings with affinity diagrams and build evidence-based user personas.', link:'https://www.nngroup.com/articles/which-ux-research-methods/' },
+            { title:'Module 2 — Journey Mapping & Usability Testing', desc:"Map the full user journey: touchpoints, emotions, pain points, and opportunities at each stage. Use empathy maps to understand what users think, feel, say, and do. Run moderated usability tests with 5–7 participants to uncover critical friction points and design improvements.", link:'https://www.nngroup.com/articles/customer-journey-mapping/' }
+        ]
+    },
+    'Project Management': {
+        1:[
+            { title:'Module 1 — Agile Manifesto & Scrum Roles', desc:'Agile is a mindset before it is a methodology. Study the 4 Agile values and 12 principles. Learn Scrum roles (Product Owner, Scrum Master, Dev Team), ceremonies (sprint planning, daily standup, review, retrospective), and artifacts (product backlog, sprint backlog, increment).', link:'https://agilemanifesto.org/' },
+            { title:'Module 2 — Sprint Planning & Velocity', desc:'A well-run sprint starts with great planning. Learn to break user stories into tasks, estimate with story points (Fibonacci scale), and set a realistic sprint goal. Track team velocity over sprints to improve predictability. Read burndown charts and manage sprint risk proactively.', link:'https://scrumguides.org/scrum-guide.html#sprint-planning' }
+        ],
+        2:[
+            { title:'Module 1 — Kanban Board & WIP Limits', desc:'Kanban makes work visible. Set up a board with columns: Backlog, To Do, In Progress, Review, Done. Understand why WIP limits are the most powerful Kanban tool — they prevent multitasking, expose bottlenecks, and improve flow. Calculate cycle time and lead time from board data.', link:'https://kanbanize.com/kanban-resources/getting-started/what-is-kanban' },
+            { title:'Module 2 — Lean Principles & Kaizen', desc:'Lean was born in Toyota factories and transformed software teams. Apply the 5 Lean principles: identify value, map value stream, create flow, establish pull, pursue perfection. Learn Kaizen (continuous improvement) and how sprint retrospectives operationalize it for your team.', link:'https://www.lean.org/explore-lean/what-is-lean/' }
+        ],
+        3:[
+            { title:'Module 1 — Leadership Styles & Team Dynamics', desc:"Great project managers lead people, not just tasks. Compare servant, transformational, and transactional leadership. Understand Tuckman's stages (Forming, Storming, Norming, Performing). Build psychological safety so every team member feels safe to speak up, take risks, and innovate.", link:'https://www.mindtools.com/pages/article/newLDR_41.htm' },
+            { title:'Module 2 — Conflict Resolution & Feedback', desc:'Conflict is inevitable; dysfunction is optional. Use the Thomas-Kilmann model to choose the right conflict style (compete, collaborate, compromise, avoid, accommodate). Run effective 1-on-1s. Master giving and receiving feedback using the SBI model (Situation, Behavior, Impact).', link:'https://www.mindtools.com/pages/article/newLDR_81.htm' }
+        ]
+    }
+};
+
+// Course-specific MP4 video URLs per lesson per submodule
+// Using freely embeddable sample videos — replace with your own hosted MP4s for production
+// YouTube video IDs — one per submodule, course & lesson relevant
+const COURSE_VIDEOS = {
+    'Full Stack Development': {
+        1: ['UB1O30fR-EE', 'D-h8L5hgW-w'],   // HTML Crash Course (Traversy) | CSS Flexbox (Traversy)
+        2: ['PkZNo7MFNFg', 'hKB-YGF14SY'],   // JavaScript Full Course (freeCodeCamp) | DOM Manipulation (Traversy)
+        3: ['w7ejDZ8SWv8', 'O6P86uwfdR0']    // React Crash Course (Traversy) | React Hooks (Codevolution)
+    },
+    'Cyber Security': {
+        1: ['vv4y_uOneC0', 'qiQR5rTSshw'],   // OSI Model Explained | Network Security Fundamentals
+        2: ['fNzpcB7ODxQ', 'WnN6dbos5u8'],   // Ethical Hacking Full Course (freeCodeCamp) | Penetration Testing
+        3: ['4YYvBLAF4T8', 'ns1LX6mEvyM']    // SQL Injection & XSS (OWASP) | Secure Coding & HTTP Headers
+    },
+    'AI & Machine Learning': {
+        1: ['QUT1VHiLmmI', 'vmEHCJofslg'],    // NumPy Tutorial (freeCodeCamp) | Pandas Tutorial (freeCodeCamp)
+        2: ['7eh4d6sabA0', 'Gol_qOgRqfA'],   // ML Basics (Supervised/Unsupervised) | Model Evaluation & Cross-Validation
+        3: ['aircAruvnKk', 'tPYj3fFJGjk']    // Neural Networks (3Blue1Brown) | Deep Learning with Keras & TensorFlow
+    },
+    'Digital Marketing': {
+        1: ['xsVTqzratPs', 'nU-IIXBWlS4'],   // SEO for Beginners (Ahrefs) | Google Ads Tutorial
+        2: ['85dtiMz9tSo', 'qFJeN9V1ZsI'],   // Social Media Marketing Strategy | Facebook Ads Full Guide
+        3: ['v8JJrDvQDF4', 'wfsRAZUnonI']    // Email Marketing Campaigns | Email Analytics & GDPR
+    },
+    'UI/UX Design': {
+        1: ['QrNi9FmdlxY', 'HZuk6Wkx_Eg'],   // Color Theory for Designers | Typography & Visual Hierarchy
+        2: ['jwCmIBJ8Jtc', 'keoL0B7NaEs'],   // Figma UI Design Tutorial (freeCodeCamp) | Design Systems in Figma
+        3: ['v8JJrDvQDF4', 'wfsRAZUnonI']    // UX Research Methods | User Journey Mapping
+    },
+    'Project Management': {
+        1: ['9TycLR0TqFA', 'iVaFVa7HYj4'],   // Agile & Scrum Full Course | Sprint Planning & Velocity
+        2: ['iVaFVa7HYj4', 'Gol_qOgRqfA'],  // Kanban Board & WIP Limits | Lean Principles & Kaizen
+        3: ['85dtiMz9tSo', 'qFJeN9V1ZsI']   // Leadership Styles & Team Dynamics | Conflict Resolution & Feedback
+    }
+};
+
+const QUIZ = {
+    'Full Stack Development': {
+        1:[{q:'What does HTML stand for?',opts:['Hyper Text Markup Language','High Tech Modern Language','Hyper Transfer Markup Logic','None'],ans:0},{q:'Which CSS property controls flex direction?',opts:['display','flex-direction','position','float'],ans:1},{q:'What is the CSS box model?',opts:['A 3D model','Content, padding, border, margin','A JS concept','A grid system'],ans:1},{q:'Which HTML tag creates a hyperlink?',opts:['<link>','<a>','<href>','<url>'],ans:1},{q:'What does CSS stand for?',opts:['Cascading Style Sheets','Computer Style Sheets','Creative Style System','None'],ans:0}],
+        2:[{q:'What does DOM stand for?',opts:['Document Object Model','Data Object Method','Dynamic Output Mode','None'],ans:0},{q:'Which keyword declares a variable in modern JS?',opts:['var','int','let','string'],ans:2},{q:'What does === check?',opts:['Value only','Type only','Value and type','Neither'],ans:2},{q:'Which method adds an element to end of array?',opts:['push()','pop()','shift()','unshift()'],ans:0},{q:'What is typeof null?',opts:['null','undefined','object','number'],ans:2}],
+        3:[{q:'What is JSX?',opts:['A database','JavaScript XML syntax for React','A CSS framework','A server language'],ans:1},{q:'What hook manages state in React?',opts:['useEffect','useState','useRef','useContext'],ans:1},{q:'Props in React are?',opts:['Mutable','Read-only inputs to components','CSS classes','Database queries'],ans:1},{q:'What does useEffect do?',opts:['Manages state','Handles side effects','Creates components','Styles elements'],ans:1},{q:'How do you create a React component?',opts:['function MyComponent()','class MyComponent','<MyComponent>','React.create()'],ans:0}]
+    },
+    'Cyber Security': {
+        1:[{q:'What is a firewall?',opts:['A physical wall','Network security system that monitors traffic','A type of virus','A database'],ans:1},{q:'OSI model has how many layers?',opts:['4','5','7','8'],ans:2},{q:'What is a VPN?',opts:['Virtual Private Network','Very Private Node','Visual Protocol Network','None'],ans:0},{q:'Which port is used for HTTPS?',opts:['80','443','22','21'],ans:1},{q:'What does TCP stand for?',opts:['Transfer Control Protocol','Transmission Control Protocol','Total Control Process','None'],ans:1}],
+        2:[{q:'What is ethical hacking?',opts:['Illegal hacking','Authorized testing of systems','Random hacking','Social media hacking'],ans:1},{q:'What is a penetration test?',opts:['A medical test','Simulated cyberattack to find vulnerabilities','A speed test','A database test'],ans:1},{q:'What does vulnerability scanning do?',opts:['Deletes files','Identifies security weaknesses','Speeds up network','Encrypts data'],ans:1},{q:'What is Metasploit?',opts:['A browser','A penetration testing framework','A database','An antivirus'],ans:1},{q:'What is social engineering?',opts:['Building software','Manipulating people to reveal information','Network design','Database management'],ans:1}],
+        3:[{q:'What is SQL injection?',opts:['A database backup','Inserting malicious SQL into queries','A CSS technique','A server error'],ans:1},{q:'XSS stands for?',opts:['Extra Style Sheet','Cross-Site Scripting','External Server Script','None'],ans:1},{q:'OWASP Top 10 lists?',opts:['Top CSS frameworks','Top security risks','Top databases','Top JS libraries'],ans:1},{q:'What is CSRF?',opts:['A programming language','Cross-Site Request Forgery','A database','A CSS property'],ans:1},{q:'What does input validation prevent?',opts:['Slow performance','Injection attacks','Network issues','CSS errors'],ans:1}]
+    },
+    'AI & Machine Learning': {
+        1:[{q:'What is NumPy used for?',opts:['Web development','Numerical computing in Python','Database management','UI design'],ans:1},{q:'Pandas is used for?',opts:['Game development','Data manipulation and analysis','Network security','Cloud hosting'],ans:1},{q:'What is a DataFrame?',opts:['A CSS layout','2D labeled data structure in Pandas','A React component','A database table'],ans:1},{q:'Which function reads a CSV in Pandas?',opts:['pd.read_csv()','pd.open()','pd.load()','pd.import()'],ans:0},{q:'What does dropna() do?',opts:['Drops columns','Removes missing values','Sorts data','Filters rows'],ans:1}],
+        2:[{q:'Supervised learning uses?',opts:['Unlabeled data','Labeled training data','No data','Random data'],ans:1},{q:'What is overfitting?',opts:['Model performs well on all data','Model memorizes training data but fails on new data','Model is too simple','Model has no errors'],ans:1},{q:'Classification predicts?',opts:['Continuous values','Categories/classes','Images','Text'],ans:1},{q:'What is cross-validation?',opts:['A CSS technique','Evaluate model on multiple data splits','A database method','A network protocol'],ans:1},{q:'Which algorithm is used for clustering?',opts:['Linear Regression','K-Means','Decision Tree','Naive Bayes'],ans:1}],
+        3:[{q:'What is a neural network?',opts:['A computer network','System of interconnected nodes inspired by the brain','A database','A CSS grid'],ans:1},{q:'TensorFlow is?',opts:['A database','An ML framework by Google','A CSS tool','A JS library'],ans:1},{q:'What is backpropagation?',opts:['Going back in code','Algorithm to update weights in neural networks','A database query','A CSS animation'],ans:1},{q:'What is dropout in deep learning?',opts:['Removing data','Randomly disabling neurons to prevent overfitting','A loss function','An optimizer'],ans:1},{q:'What is an activation function?',opts:['A CSS function','Introduces non-linearity in neural networks','A database function','A sorting algorithm'],ans:1}]
+    },
+    'Digital Marketing': {
+        1:[{q:'SEO stands for?',opts:['Social Engine Optimization','Search Engine Optimization','Site Engagement Output','None'],ans:1},{q:'SEM stands for?',opts:['Search Engine Marketing','Social Engagement Method','Site Engine Management','None'],ans:0},{q:'What is a keyword in SEO?',opts:['A password','A term users search for','A CSS property','A database field'],ans:1},{q:'What is a backlink?',opts:['A broken link','A link from another website to yours','A CSS link','A database link'],ans:1},{q:'What does CTR stand for?',opts:['Click Through Rate','Content Transfer Rate','Customer Total Revenue','None'],ans:0}],
+        2:[{q:'What is a social media campaign?',opts:['A TV advertisement','Coordinated marketing activity on social platforms','A print ad','A radio show'],ans:1},{q:'Paid social media ads are called?',opts:['Organic posts','Sponsored/paid campaigns','Stories','Reels'],ans:1},{q:'Engagement rate measures?',opts:['Website speed','How users interact with content','Server uptime','Database size'],ans:1},{q:'What is A/B testing in ads?',opts:['Testing two servers','Comparing two ad versions','Testing two databases','Testing two websites'],ans:1},{q:'What is reach in social media?',opts:['Number of clicks','Unique users who saw your content','Number of shares','Number of comments'],ans:1}],
+        3:[{q:'Email marketing automation does?',opts:['Sends emails manually','Sends targeted emails automatically based on triggers','Deletes emails','Blocks spam'],ans:1},{q:'Open rate in email is?',opts:['Emails sent','Percentage of recipients who opened the email','Emails bounced','Emails deleted'],ans:1},{q:'What is a drip campaign?',opts:['A leaking pipe','Series of automated emails sent over time','A social media post','A paid ad'],ans:1},{q:'What does bounce rate mean in email?',opts:['Emails opened','Emails that could not be delivered','Emails forwarded','Emails replied'],ans:1},{q:'GDPR compliance in email requires?',opts:['Ignoring unsubscribes','Explicit consent and right to opt out','Buying email lists','Sending unlimited emails'],ans:1}]
+    },
+    'UI/UX Design': {
+        1:[{q:'What is color theory?',opts:['A physics concept','Study of how colors interact and affect perception','A math theory','A coding concept'],ans:1},{q:'Typography in design refers to?',opts:['Drawing images','Art of arranging text','Writing code','Database design'],ans:1},{q:'What is visual hierarchy?',opts:['A company structure','Arrangement of elements to show importance','A CSS property','A database concept'],ans:1},{q:'What are complementary colors?',opts:['Colors that match','Colors opposite each other on the color wheel','Colors that are similar','Dark colors'],ans:1},{q:'What is white space in design?',opts:['White background','Empty space around elements to improve readability','A CSS color','A font style'],ans:1}],
+        2:[{q:'Figma is used for?',opts:['Backend development','UI/UX design and prototyping','Database management','Network security'],ans:1},{q:'A wireframe is?',opts:['A metal frame','Low-fidelity layout sketch of a design','A CSS grid','A database schema'],ans:1},{q:'Prototyping means?',opts:['Writing final code','Creating interactive mockup of a design','Deploying an app','Testing a database'],ans:1},{q:'What is auto layout in Figma?',opts:['Automatic code generation','Responsive layout that adjusts to content','A database feature','A CSS property'],ans:1},{q:'What are design tokens?',opts:['Authentication tokens','Reusable design values like colors and spacing','Database records','CSS classes'],ans:1}],
+        3:[{q:'User research involves?',opts:['Researching competitors','Understanding user needs and behaviors','Writing code','Designing logos'],ans:1},{q:'A user persona is?',opts:['A real user','Fictional representation of target user','A CSS class','A database record'],ans:1},{q:'User journey map shows?',opts:['A geographic map','Steps a user takes to complete a task','A database schema','A network diagram'],ans:1},{q:'What is an empathy map?',opts:['A geographic map','Tool to understand user thoughts, feelings and actions','A CSS tool','A database diagram'],ans:1},{q:'What is usability testing?',opts:['Testing code performance','Evaluating a product by testing it with real users','Testing database speed','Testing network security'],ans:1}]
+    },
+    'Project Management': {
+        1:[{q:'What is a Sprint in Scrum?',opts:['A running race','A fixed time period to complete work','A database query','A CSS animation'],ans:1},{q:'Daily standup is?',opts:['A fitness exercise','Short daily team meeting to sync progress','A database backup','A code review'],ans:1},{q:'Product backlog contains?',opts:['Completed tasks','Prioritized list of features to be built','Bug reports only','Meeting notes'],ans:1},{q:'Who is the Scrum Master?',opts:['The project owner','Facilitator who removes blockers for the team','The lead developer','The client'],ans:1},{q:'What is a sprint retrospective?',opts:['A project demo','Meeting to reflect on what went well and what to improve','A planning session','A code review'],ans:1}],
+        2:[{q:'Kanban board visualizes?',opts:['Financial data','Workflow and task status','Network topology','Database schema'],ans:1},{q:'WIP limit means?',opts:['Work In Progress limit','Work Is Pending limit','Work Input Process','None'],ans:0},{q:'Lean methodology focuses on?',opts:['Adding more features','Eliminating waste and maximizing value','Increasing team size','Writing more documentation'],ans:1},{q:'What is cycle time in Kanban?',opts:['Time to complete a full project','Time from starting to completing a task','Time for a meeting','Time to deploy code'],ans:1},{q:'What is Kaizen?',opts:['A Japanese food','Continuous improvement philosophy','A project management tool','A coding framework'],ans:1}],
+        3:[{q:'Conflict resolution in teams involves?',opts:['Ignoring conflicts','Addressing disagreements constructively','Firing team members','Avoiding communication'],ans:1},{q:'A good leader should?',opts:['Micromanage everything','Empower and guide the team','Work alone','Avoid feedback'],ans:1},{q:'Delegation means?',opts:['Doing all work yourself','Assigning tasks to appropriate team members','Avoiding responsibility','Canceling tasks'],ans:1},{q:'What is servant leadership?',opts:['Being a servant','Leader who prioritizes team needs over their own','Strict management style','Avoiding decisions'],ans:1},{q:'What is psychological safety?',opts:['Physical safety at work','Team environment where members feel safe to speak up','A mental health app','A security protocol'],ans:1}]
+    }
+};
+
+// Load YouTube IFrame API once
+if (!window._ytApiLoaded) {
+    window._ytApiLoaded = true;
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
+}
+window._ytPlayers = {};
+window._ytApiReady = false;
+window.onYouTubeIframeAPIReady = function() { window._ytApiReady = true; };
+
+let dashProgress   = [];
+let currentCourse  = null;
+let moduleStatus   = { lessonDone:[false,false,false], quizDone:[false,false,false] };
+let activeLessonIdx  = null;
+let vidsDone         = [false, false]; // tracks if both submodule videos ended
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function showToast(msg, type) {
+    let t = document.getElementById('nexlify-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'nexlify-toast'; document.body.appendChild(t); }
+    t.className = 'nexlify-toast ' + (type || 'success');
+    t.innerHTML = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function showTab(name, el) {
+    document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
+    if (el) el.classList.add('active');
+}
+
+function toggleSidebar() {
+    const sb = document.querySelector('.dash-sidebar');
+    sb.classList.toggle('open');
+    if (sb.classList.contains('open')) {
+        document.querySelectorAll('.dash-nav a').forEach(l => l.addEventListener('click', () => sb.classList.remove('open'), {once:true}));
+    }
+}
+
+// ============================================================
+// NAV SETUP
+// ============================================================
+[['nav-overview','overview'],['nav-mycourse','mycourse'],['nav-tasks','tasks'],['nav-profile','profile']].forEach(([id, tab]) => {
+    document.getElementById(id).addEventListener('click', e => { e.preventDefault(); showTab(tab, document.getElementById(id)); if (tab === 'tasks') loadStudentTasks(); });
+});
+document.getElementById('nav-overview').classList.add('active');
+
+document.getElementById('sideLogout').onclick = e => {
+    e.preventDefault();
+    localStorage.setItem('nexlify_logged_in','false');
+    localStorage.removeItem('nexlify_user');
+    localStorage.removeItem('nexlify_token');
+    sessionStorage.clear();
+    window.location.href = 'home.html';
+};
+
+const hamburger = document.querySelector('.hamburger');
+const navMenu   = document.querySelector('.nav-menu');
+if (hamburger && navMenu) {
+    hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navMenu.classList.toggle('active'); });
+    document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => { hamburger.classList.remove('active'); navMenu.classList.remove('active'); }));
+}
+
+// ============================================================
+// PROGRESS HELPERS
+// ============================================================
+function getProgress(course) {
+    return dashProgress.filter(p => p.course === course && p.completed);
+}
+
+function initModuleStatus() {
+    moduleStatus = { lessonDone:[false,false,false], quizDone:[false,false,false] };
+    if (!currentCourse) return;
+    const done = new Set(dashProgress.filter(p => p.course === currentCourse && p.completed).map(p => p.week_no));
+    for (let i = 1; i <= 3; i++) {
+        moduleStatus.lessonDone[i-1] = done.has(i);
+        moduleStatus.quizDone[i-1]   = done.has(i + 3);
+    }
+}
+
+function getUnlocks() {
+    const ld = moduleStatus.lessonDone, qd = moduleStatus.quizDone;
+    return {
+        lesson1: true,
+        quiz1:   ld[0],
+        lesson2: ld[0] && qd[0],
+        quiz2:   ld[0] && qd[0] && ld[1],
+        lesson3: ld[0] && qd[0] && ld[1] && qd[1],
+        quiz3:   ld[0] && qd[0] && ld[1] && qd[1] && ld[2]
+    };
+}
+
+// ============================================================
+// DASHBOARD LOAD
+// ============================================================
+async function loadDashboard() {
+    console.log('Loading dashboard for user:', user);
+    const name = user.name || 'Student';
+    const init = name.charAt(0).toUpperCase();
+    ['sideAvatar','profAvatar'].forEach(id => document.getElementById(id).textContent = init);
+    document.getElementById('sideName').textContent   = name;
+    document.getElementById('sideEmail').textContent  = user.email || '';
+    document.getElementById('greetName').textContent  = name.split(' ')[0];
+    document.getElementById('profName').textContent   = name;
+    document.getElementById('profRole').textContent   = user.role || 'Student';
+    document.getElementById('profEmail').textContent  = user.email || '';
+    document.getElementById('profPhone').textContent  = user.phone || 'Not provided';
+    const cachedJoined = localStorage.getItem('nexlify_cache_joined');
+    document.getElementById('profJoined').textContent = cachedJoined
+        ? new Date(cachedJoined).toLocaleDateString('en-IN',{year:'numeric',month:'long'})
+        : '—';
+
+    const loadEnrollments = async () => {
+        const tok = localStorage.getItem('nexlify_token') || sessionStorage.getItem('token');
+
+        const handleExpired = () => {
+            showToast('⏰ Session expired. Please login again.', 'warning');
+            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        };
+
+        // ── Primary: full dashboard API ──────────────────────────────
+        try {
+            const r = await fetch(API + '/dashboard/' + encodeURIComponent(user.email), {
+                headers: tok ? { 'Authorization': 'Bearer ' + tok } : {}
+            });
+            if (r.status === 401 || r.status === 403) { handleExpired(); return []; }
+            const d = await r.json();
+            if (d.success) {
+                dashProgress = d.progress || [];
+                // Cache for offline fallback
+                localStorage.setItem('nexlify_cache_enrollments', JSON.stringify(d.enrollments || []));
+                localStorage.setItem('nexlify_cache_progress',    JSON.stringify(d.progress    || []));
+                if (d.user && d.user.created_at) localStorage.setItem('nexlify_cache_joined', d.user.created_at);
+                return d.enrollments || [];
+            }
+            console.warn('Dashboard API failed, trying enrollments API:', d.message);
+        } catch(e) {
+            console.error('Error fetching dashboard data:', e);
+        }
+
+        // ── Fallback: enrollments-only API ───────────────────────────
+        try {
+            const r = await fetch(API + '/enrollments/' + encodeURIComponent(user.email), {
+                headers: tok ? { 'Authorization': 'Bearer ' + tok } : {}
+            });
+            if (r.status === 401 || r.status === 403) { handleExpired(); return []; }
+            const d = await r.json();
+            if (d.success) return d.enrollments || [];
+        } catch(e) {
+            console.error('Error fetching enrollments data:', e);
+        }
+
+        // ── Offline: use localStorage cache ──────────────────────────
+        const cachedEnrollments = JSON.parse(localStorage.getItem('nexlify_cache_enrollments') || '[]');
+        const cachedProgress    = JSON.parse(localStorage.getItem('nexlify_cache_progress')    || '[]');
+        if (cachedEnrollments.length > 0) {
+            dashProgress = cachedProgress;
+            showToast('⚠️ Server offline — showing cached data.', 'warning');
+            return cachedEnrollments;
+        }
+
+        showToast('❌ Could not load courses. Please start the server and refresh.', 'error');
+        return [];
+    };
+
+    const enrollments = await loadEnrollments();
+    document.getElementById('statCourse').textContent = enrollments.length;
+
+    if (enrollments.length > 0) {
+        currentCourse = enrollments[0].course;
+        initModuleStatus();
+        document.getElementById('profCourse').textContent = enrollments.map(e => e.course).join(', ');
+        document.getElementById('prof-badge-course').textContent = '\ud83c\udf93 ' + enrollments[0].course;
+        renderOverview(enrollments);
+        renderMyCourse(enrollments);
+        renderProfileStats(enrollments);
+        window._lastEnrollments = enrollments;
+        loadCertificates();
+    } else {
+        renderNoCourse();
+        renderMyCourse([]);
+        renderProfileStats([]);
+    }
+}
+
+// ============================================================
+// OVERVIEW
+// ============================================================
+function renderOverview(enrollments) {
+    let totalDone = 0, totalLeft = 0;
+    enrollments.forEach(en => {
+        const lessons = COURSE_LESSONS[en.course] || [];
+        const done = getProgress(en.course).length;
+        totalDone += done;
+        totalLeft += lessons.length - done;
+    });
+    document.getElementById('statDone').textContent = totalDone;
+    document.getElementById('statLeft').textContent = totalLeft;
+
+    let cards = '';
+    enrollments.forEach(en => {
+        const date = new Date(en.enrolled_at).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'});
+        const bc   = (en.status||'active') === 'active' ? 'badge-active' : 'badge-pending';
+        cards += `<div class="enrolled-card">
+            <div>
+                <h2><i class="fas fa-graduation-cap"></i> ${en.course}</h2>
+                <p>Enrolled on ${date}</p>
+                <span class="badge ${bc}">${en.status||'active'}</span>
+            </div>
+            <button class="btn-primary" style="padding:0.7rem 1.5rem;"
+                onclick="selectedCourseTab='${en.course.replace(/'/g,"\\'")}';\ currentCourse='${en.course.replace(/'/g,"\\'")}';\ initModuleStatus();\ showTab('mycourse', document.getElementById('nav-mycourse'));\ renderMyCourse(window._lastEnrollments||[]);">
+                <i class="fas fa-book-open"></i> View Lessons
+            </button>
+        </div>`;
+    });
+    document.getElementById('overviewCourse').innerHTML = cards;
+
+    let prog = '<div class="section-label"><i class="fas fa-chart-line"></i> Overall Progress</div>';
+    enrollments.forEach(en => {
+        const lessons = COURSE_LESSONS[en.course] || [];
+        const done = getProgress(en.course).length;
+        const pct  = lessons.length ? Math.round(done / lessons.length * 100) : 0;
+        prog += `<div class="progress-card" style="margin-bottom:1rem;">
+            <div class="top"><strong>${en.course}</strong><span style="color:#facc15;font-weight:700;font-size:1.1rem;">${pct}%</span></div>
+            <div style="background:rgba(255,255,255,0.07);border-radius:10px;height:14px;overflow:hidden;margin:12px 0;">
+                <div style="height:100%;width:${pct}%;background:linear-gradient(135deg,#facc15,#eab308);border-radius:10px;transition:width 0.8s;"></div>
+            </div>
+            <div class="progress-labels">${done} of ${lessons.length} lessons completed &nbsp;|&nbsp; ${done===lessons.length&&lessons.length>0?'🎉 Completed!':'In Progress'}</div>
+        </div>`;
+    });
+    document.getElementById('overviewProgress').innerHTML = prog;
+}
+
+// ============================================================
+// MY COURSE
+// ============================================================
+let selectedCourseTab = null;
+
+function renderMyCourse(enrollments) {
+    if (!enrollments.length) { 
+        document.getElementById('myCourseContent').innerHTML = '<div class="no-course"><i class="fas fa-book"></i><h3>No Courses Enrolled</h3><p>You haven\'t enrolled in any courses yet. Visit the <a href="courses.html" style="color:#facc15;">Courses</a> page to get started!</p></div>';
+        return; 
+    }
+
+    // Default to first enrollment or keep existing selection if valid
+    if (!selectedCourseTab || !enrollments.find(e => e.course === selectedCourseTab)) {
+        selectedCourseTab = enrollments[0].course;
+    }
+
+    // Build course tab buttons
+    let tabsHtml = '<div class="course-tabs">';
+    enrollments.forEach(en => {
+        const active = en.course === selectedCourseTab ? 'active' : '';
+        tabsHtml += `<button class="course-tab-btn ${active}" onclick="selectCourseTab('${en.course.replace(/'/g,"\\'")}')"><i class="fas fa-book-open" style="margin-right:6px;"></i>${en.course}</button>`;
+    });
+    tabsHtml += '</div><div id="course-lessons-area"></div>';
+    document.getElementById('myCourseContent').innerHTML = tabsHtml;
+
+    renderCourseLesson(enrollments);
+}
+
+function selectCourseTab(course) {
+    selectedCourseTab = course;
+    currentCourse = course;
+    initModuleStatus();
+    // Update active button
+    document.querySelectorAll('.course-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === course);
+    });
+    // Re-render lessons for selected course
+    const enrollments = window._lastEnrollments || [];
+    renderCourseLesson(enrollments);
+}
+
+function renderCourseLesson(enrollments) {
+    window._lastEnrollments = enrollments;
+    const en = enrollments.find(e => e.course === selectedCourseTab);
+    if (!en) return;
+
+    currentCourse = en.course;
+    initModuleStatus();
+    const u = getUnlocks();
+    const lessons = COURSE_LESSONS[en.course] || [];
+
+    const isCourseFinished = moduleStatus.lessonDone.every(Boolean) && moduleStatus.quizDone.every(Boolean);
+
+    let html = '';
+    
+    if (isCourseFinished) {
+        html += `
+        <div class="enrolled-card" style="border: 2px solid #D4AF37; background: rgba(212, 175, 55, 0.05); margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+            <div>
+                <h2 style="color:#facc15; font-size: 1.5rem; margin-bottom: 0.5rem;"><i class="fas fa-medal"></i> Course Completed!</h2>
+                <p style="color:#94a3b8; font-size: 1rem;">Congratulations! You have successfully completed all modules and requirements for this course.</p>
+            </div>
+            <button class="btn-primary" onclick="viewCertificate('${en.course.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #D4AF37, #AF8A2C); color: #000; padding: 0.9rem 2rem;">
+                <i class="fas fa-certificate"></i> View Certificate
+            </button>
+        </div>`;
+    }
+
+    const chain = [
+        { type:'lesson', idx:1, unlocked:u.lesson1 },
+        { type:'quiz',   idx:1, unlocked:u.quiz1   },
+        { type:'lesson', idx:2, unlocked:u.lesson2 },
+        { type:'quiz',   idx:2, unlocked:u.quiz2   },
+        { type:'lesson', idx:3, unlocked:u.lesson3 },
+        { type:'quiz',   idx:3, unlocked:u.quiz3   }
+    ];
+
+    html += '<div class="lesson-list">';
+    chain.forEach(item => {
+        const isDone    = item.type==='lesson' ? moduleStatus.lessonDone[item.idx-1] : moduleStatus.quizDone[item.idx-1];
+        const isCurrent = !isDone && item.unlocked;
+        const state     = isDone ? 'done' : isCurrent ? 'current' : 'locked';
+        const tag       = isDone ? 'Completed' : isCurrent ? 'In Progress' : 'Locked';
+        const icon      = isDone ? '<i class="fas fa-check"></i>' : isCurrent ? '<i class="fas fa-play"></i>' : '<i class="fas fa-lock"></i>';
+        const l         = lessons[item.idx-1] || {};
+
+        let hTitle, desc, action;
+        if (item.type === 'lesson') {
+            hTitle = `Week ${l.week||item.idx}: ${l.topic||'Lesson '+item.idx}`;
+            desc   = l.desc || 'Watch submodule videos and complete the lesson.';
+            action = `currentCourse='${en.course.replace(/'/g,"\\'")}';\ openLesson(${item.idx})`;
+        } else {
+            hTitle = `Assessment ${item.idx}: ${l.topic||'Quiz '+item.idx}`;
+            desc   = 'Score 67%+ to unlock the next lesson.';
+            action = `currentCourse='${en.course.replace(/'/g,"\\'")}';\ openQuiz(${item.idx})`;
+        }
+
+        const btn = isCurrent
+            ? `<button class="btn-primary" style="padding:0.5rem 1.1rem;font-size:0.82rem;margin-left:8px;" onclick="${action}">
+                   ${item.type==='lesson'?'<i class="fas fa-play"></i> Start':'<i class="fas fa-clipboard-check"></i> Take Quiz'}
+               </button>` : '';
+
+        html += `<div class="lesson-card ${state}">
+            <div class="lesson-num ${state}">${icon}</div>
+            <div class="lesson-info"><h4>${hTitle}</h4><p>${desc}</p></div>
+            <span class="lesson-tag ${state}">${tag}</span>
+            ${btn}
+        </div>`;
+    });
+    html += '</div>';
+    document.getElementById('course-lessons-area').innerHTML = html;
+}
+
+function renderNoCourse() {
+    ['statDone','statLeft','statCourse'].forEach(id => document.getElementById(id).textContent = '0');
+    document.getElementById('overviewCourse').innerHTML = `<div class="no-course"><i class="fas fa-book"></i><h3>No Course Enrolled Yet</h3><p>Browse our courses and enroll to start your learning journey.</p><a href="courses.html" class="btn-primary" style="display:inline-flex;padding:0.8rem 1.8rem;">Browse Courses</a></div>`;
+    document.getElementById('myCourseContent').innerHTML = `<div class="no-course"><i class="fas fa-book"></i><h3>No Course Enrolled Yet</h3><p>Go to <a href="courses.html" style="color:#facc15;">Courses</a> and enroll first.</p></div>`;
+    document.getElementById('overviewProgress').innerHTML = '';
+}
+
+// ============================================================
+// API: MARK DONE
+// ============================================================
+async function markDone(weekNo) {
+    const tok = localStorage.getItem('nexlify_token') || sessionStorage.getItem('token');
+    try {
+        const ct = await fetch(API + '/csrf-token?email=' + encodeURIComponent(user.email));
+        const cd = await ct.json();
+        if (!cd.success) { showToast('❌ Could not get CSRF token', 'error'); return; }
+        const r = await fetch(API + '/progress/complete', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'x-csrf-token': cd.csrfToken,
+                'Authorization': tok ? 'Bearer ' + tok : ''
+            },
+            body: JSON.stringify({ email: user.email, course: currentCourse, week_no: weekNo })
+        });
+        const d = await r.json();
+        if (d.success) {
+            const existing = dashProgress.find(p => p.course === currentCourse && p.week_no == weekNo);
+            if (existing) { existing.completed = 1; }
+            else { dashProgress.push({ course: currentCourse, week_no: weekNo, completed: 1 }); }
+            initModuleStatus();
+            showToast('✅ ' + d.message);
+            const enrollments = window._lastEnrollments || [];
+            renderCourseLesson(enrollments);
+            renderOverview(enrollments);
+            renderProfileStats(enrollments);
+            if (moduleStatus.lessonDone.every(Boolean) && moduleStatus.quizDone.every(Boolean)) {
+                loadCertificates();
+            }
+            showTab('mycourse', document.getElementById('nav-mycourse'));
+        } else {
+            showToast('❌ ' + (d.message || 'Error saving progress'), 'error');
+        }
+    } catch(e) {
+        showToast('❌ Could not connect to server', 'error');
+    }
+}
+
+// ============================================================
+// LESSON MODAL
+// ============================================================
+function openLesson(lessonIdx) {
+    activeLessonIdx = lessonIdx;
+    vidsDone = [false, false];
+
+    const lessons = COURSE_LESSONS[currentCourse] || [];
+    const lesson  = lessons[lessonIdx - 1] || {};
+    const submods = (SUBMODULE_DESC[currentCourse] || {})[lessonIdx] || [
+        { title:'Module 1', desc:'Introduction to this lesson topic. Watch the full video to proceed.', link: lesson.pdf||'#' },
+        { title:'Module 2', desc:'Deep dive into core concepts. Complete the video to unlock Mark as Done.', link: lesson.pdf||'#' }
+    ];
+
+    // Header
+    document.getElementById('lm-badge').textContent = currentCourse + ' · Lesson ' + lessonIdx;
+    document.getElementById('lm-title').textContent = `Lesson ${lessonIdx}: ${lesson.topic||'Lesson '+lessonIdx}`;
+    document.getElementById('lm-desc').textContent  = lesson.desc || '';
+
+    // --- LEARN TAB ---
+    let lhtml = `<div class="learn-points-box">
+        <div class="learn-points-label">📌 WHAT YOU WILL LEARN</div>`;
+    (lesson.points||[]).forEach(pt => {
+        lhtml += `<div class="lpt"><div class="lpt-dot"></div><span>${pt}</span></div>`;
+    });
+    lhtml += `</div>
+    <p style="color:#94a3b8;font-size:0.88rem;margin-top:14px;line-height:1.6;">
+        This lesson has <strong style="color:#facc15;">2 submodules</strong>, each with a video and study material.
+        You must <strong style="color:#10b981;">watch both videos completely</strong> before the Mark as Done button appears.
+        Head to the <strong style="color:#fff;">Submodules</strong> tab to begin.
+    </p>`;
+    document.getElementById('lm-learn-content').innerHTML = lhtml;
+
+    // --- RESOURCES TAB ---
+    let rhtml = `<p style="color:#94a3b8;font-size:0.88rem;margin-bottom:18px;">All reference materials and links for Lesson ${lessonIdx}.</p>`;
+    rhtml += `<a href="${lesson.pdf||'#'}" target="_blank" class="res-card">
+        <div class="res-card-icon pdf"><i class="fas fa-file-pdf"></i></div>
+        <div class="res-card-text"><h4>PDF Study Material</h4><p>Official documentation & reference guide</p></div>
+        <i class="fas fa-external-link-alt res-card-arrow"></i>
+    </a>`;
+    submods.forEach((sm, i) => {
+        rhtml += `<a href="${sm.link||'#'}" target="_blank" class="res-card">
+            <div class="res-card-icon link"><i class="fas fa-link"></i></div>
+            <div class="res-card-text"><h4>${sm.title} — Reference</h4><p>Supplementary reading for submodule ${i+1}</p></div>
+            <i class="fas fa-external-link-alt res-card-arrow"></i>
+        </a>`;
+    });
+    document.getElementById('lm-resources-content').innerHTML = rhtml;
+
+    // --- SUBMODULES TAB ---
+    buildSubmodules(submods, lesson);
+
+    switchLMTab('learn');
+    document.getElementById('lessonModal').style.display = 'flex';
+}
+
+function buildSubmodules(submods, lesson) {
+    document.getElementById('lm-tracker').innerHTML = `
+        <div class="submod-tracker">
+            <div class="sdot" id="sdot-0"></div>
+            <div class="sdot-line"></div>
+            <div class="sdot" id="sdot-1"></div>
+            <div style="color:#94a3b8;font-size:0.85rem;flex:1;margin-left:10px;">Submodule videos</div>
+            <div class="submod-count" id="scount">0 / 2 watched</div>
+        </div>`;
+
+    let chtml = '';
+    submods.forEach((sm, i) => {
+        chtml += `<div class="submod-card" id="scard-${i}">
+            <div class="submod-hdr">
+                <div class="submod-title"><span class="submod-num">${i+1}</span>${sm.title}</div>
+                <span class="vid-badge pending" id="vbadge-${i}">Pending</span>
+            </div>
+            <div id="ytplayer-${i}" style="width:100%;border-radius:12px;overflow:hidden;margin-bottom:10px;background:#020617;min-height:420px;"></div>
+            <div class="vpbar-wrap"><div class="vpbar-fill" id="vpbar-${i}"></div></div>
+            <div class="submod-desc">${sm.desc}</div>
+            <a href="${sm.link||'#'}" target="_blank" class="res-btn link"><i class="fas fa-external-link-alt"></i> View Reference Material</a>
+            <a href="${sm.link||'#'}" target="_blank" class="res-btn pdf"><i class="fas fa-file-pdf"></i> PDF Resource</a>
+        </div>`;
+    });
+    document.getElementById('lm-submod-cards').innerHTML = chtml;
+
+    document.getElementById('lm-done-btn').style.display = 'none';
+    document.getElementById('lm-done-info').innerHTML = '<i class="fas fa-info-circle" style="margin-right:6px;"></i>Watch both submodule videos completely (no skipping) to unlock this button';
+
+    // Destroy old YT players
+    [0,1].forEach(i => { try { if(window._ytPlayers[i]){ window._ytPlayers[i].destroy(); window._ytPlayers[i]=null; } } catch(e){} });
+
+    const videoIds = (COURSE_VIDEOS[currentCourse]||{})[activeLessonIdx] || [];
+
+    function onVideoEnd(i) {
+        clearInterval(window._ytPlayers[i]._poll);
+        vidsDone[i] = true;
+        const bar = document.getElementById('vpbar-' + i);
+        if (bar) { bar.style.width='100%'; bar.classList.add('done'); }
+        const badge = document.getElementById('vbadge-' + i);
+        if (badge) { badge.textContent='\u2713 Watched'; badge.className='vid-badge done'; }
+        const card = document.getElementById('scard-' + i);
+        if (card) card.classList.add('watched');
+        const dot = document.getElementById('sdot-' + i);
+        if (dot) { dot.classList.remove('active'); dot.classList.add('done'); }
+        const sc = document.getElementById('scount');
+        if (sc) sc.textContent = vidsDone.filter(Boolean).length + ' / 2 watched';
+        if (vidsDone[0] && vidsDone[1]) {
+            document.getElementById('lm-done-btn').style.display = 'inline-flex';
+            document.getElementById('lm-done-info').innerHTML =
+                '<i class="fas fa-check-circle" style="margin-right:6px;color:#10b981;"></i>' +
+                '<strong style="color:#10b981;">All videos watched!</strong> You can now mark this lesson complete.';
+        }
+    }
+
+    function createYTPlayer(i) {
+        if (!window.YT || !window.YT.Player) { setTimeout(() => createYTPlayer(i), 300); return; }
+        window._ytPlayers[i] = new YT.Player('ytplayer-' + i, {
+            height: '420', width: '100%',
+            videoId: videoIds[i] || '',
+            playerVars: { rel:0, modestbranding:1 },
+            events: {
+                onStateChange: function(e) {
+                    if (e.data === YT.PlayerState.PLAYING) {
+                        const badge = document.getElementById('vbadge-' + i);
+                        if (badge && badge.textContent === 'Pending') {
+                            badge.textContent = 'Watching\u2026';
+                            badge.className = 'vid-badge watching';
+                            const dot = document.getElementById('sdot-' + i);
+                            if (dot) dot.classList.add('active');
+                        }
+                        if (!window._ytPlayers[i]._poll) {
+                            window._ytPlayers[i]._poll = setInterval(() => {
+                                const p = window._ytPlayers[i];
+                                if (!p || typeof p.getCurrentTime !== 'function') return;
+                                const cur = p.getCurrentTime(), dur = p.getDuration();
+                                if (!dur) return;
+                                const bar = document.getElementById('vpbar-' + i);
+                                if (bar) bar.style.width = ((cur/dur)*100) + '%';
+                            }, 1000);
+                        }
+                    }
+                    if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+                        clearInterval(window._ytPlayers[i]._poll);
+                        window._ytPlayers[i]._poll = null;
+                    }
+                    if (e.data === YT.PlayerState.ENDED) onVideoEnd(i);
+                }
+            }
+        });
+    }
+    createYTPlayer(0);
+    createYTPlayer(1);
+}
+
+function switchLMTab(tab) {
+    ['learn','submodules','resources'].forEach(t => {
+        document.getElementById('lpanel-' + t).classList.toggle('active', t === tab);
+        document.getElementById('ltab-' + t).classList.toggle('active', t === tab);
+    });
+}
+
+function closeLessonModal() {
+    [0,1].forEach(i => { try { if(window._ytPlayers[i]) window._ytPlayers[i].pauseVideo(); } catch(e){} });
+    document.getElementById('lessonModal').style.display = 'none';
+}
+
+async function doMarkLessonDone() {
+    const btn = document.getElementById('lm-done-btn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…'; }
+    closeLessonModal();
+    await markDone(activeLessonIdx); // week_no 1, 2, or 3
+}
+
+// Close lesson modal on backdrop click
+document.getElementById('lessonModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLessonModal();
+});
+
+// Close modals on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (document.getElementById('lessonModal').style.display === 'flex') closeLessonModal();
+        if (document.getElementById('quizModal').style.display === 'flex') closeQuizModal();
+    }
+});
+
+// ============================================================
+// QUIZ MODAL
+// ============================================================
+let activeQuizIdx = null;
+let quizAnswers   = {};
+
+function openQuiz(quizIdx) {
+    activeQuizIdx = quizIdx;
+    quizAnswers   = {};
+
+    const lesson = (COURSE_LESSONS[currentCourse] || [])[quizIdx - 1] || {};
+    document.getElementById('qm-badge').textContent  = currentCourse + ' · Assessment ' + quizIdx;
+    document.getElementById('qm-title').textContent  = `Quiz ${quizIdx}: ${lesson.topic||'Assessment '+quizIdx}`;
+    document.getElementById('qm-result').style.display = 'none';
+    document.getElementById('qm-submit').style.display = 'inline-flex';
+
+    const qs = ((QUIZ[currentCourse] || {})[quizIdx]) || [];
+    let html = '';
+    qs.forEach((q, qi) => {
+        html += `<div class="q-block"><p>${qi+1}. ${q.q}</p><div>`;
+        q.opts.forEach((opt, oi) => {
+            html += `<div class="q-opt" onclick="selectOpt(this,${qi},${oi})">${opt}</div>`;
+        });
+        html += '</div></div>';
+    });
+    document.getElementById('qm-questions').innerHTML = html;
+    document.getElementById('quizModal').style.display = 'flex';
+}
+
+function selectOpt(el, qi, oi) {
+    el.parentElement.querySelectorAll('.q-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    quizAnswers[qi] = oi;
+}
+
+function closeQuizModal() {
+    document.getElementById('quizModal').style.display = 'none';
+}
+
+// Close quiz modal on backdrop click
+document.getElementById('quizModal').addEventListener('click', function(e) {
+    if (e.target === this) closeQuizModal();
+});
+
+function submitQuiz() {
+    const qs = ((QUIZ[currentCourse] || {})[activeQuizIdx]) || [];
+    if (Object.keys(quizAnswers).length < qs.length) {
+        showToast('⚠️ Please answer all questions!', 'warning'); return;
+    }
+    let correct = 0;
+    qs.forEach((q, qi) => { if (quizAnswers[qi] === q.ans) correct++; });
+    const pct    = Math.round(correct / qs.length * 100);
+    const passed = pct >= 67;
+
+    // Reveal answers
+    qs.forEach((q, qi) => {
+        const opts = document.querySelectorAll('.q-block')[qi].querySelectorAll('.q-opt');
+        opts.forEach((o, oi) => {
+            if (oi === q.ans) o.classList.add('correct');
+            else if (quizAnswers[qi] === oi) o.classList.add('wrong');
+            o.style.pointerEvents = 'none';
+        });
+    });
+
+    document.getElementById('qm-result').style.display = 'block';
+    document.getElementById('qm-result').innerHTML = `
+        <div class="q-result-score">${correct} / ${qs.length}</div>
+        <div class="q-result-msg">${passed ? '🎉 Passed! Saving your progress…' : '❌ Score below 67%. Review and try again!'}</div>`;
+    document.getElementById('qm-submit').style.display = 'none';
+
+    if (passed) {
+        setTimeout(async () => {
+            closeQuizModal();
+            await markDone(activeQuizIdx + 3); // week_no 4, 5, or 6
+        }, 1800);
+    }
+}
+
+// ============================================================
+// PROFILE STATS
+// ============================================================
+function renderProfileStats(enrollments) {
+    let totalLessons = 0, totalQuizzes = 0;
+    enrollments.forEach(en => {
+        const done = getProgress(en.course);
+        done.forEach(p => {
+            if (p.week_no <= 3) totalLessons++;
+            else totalQuizzes++;
+        });
+    });
+    document.getElementById('profStatLessons').textContent = totalLessons;
+    document.getElementById('profStatQuizzes').textContent = totalQuizzes;
+
+    // Progress bars
+    let pbHtml = '';
+    enrollments.forEach(en => {
+        const lessons = COURSE_LESSONS[en.course] || [];
+        const done = getProgress(en.course).length;
+        const pct = lessons.length ? Math.round(done / lessons.length * 100) : 0;
+        pbHtml += `<div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span style="color:#f8fafc;font-size:0.9rem;font-weight:600;">${en.course}</span>
+                <span style="color:#facc15;font-weight:700;">${pct}%</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.07);border-radius:10px;height:10px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:linear-gradient(135deg,#facc15,#eab308);border-radius:10px;transition:width 0.8s;"></div>
+            </div>
+        </div>`;
+    });
+    document.getElementById('profProgressBars').innerHTML = pbHtml || '<div style="color:#64748b;font-size:0.9rem;">No courses enrolled yet.</div>';
+
+    // Achievements
+    const achievements = [
+        { icon:'🎓', label:'Enrolled', unlocked: enrollments.length > 0 },
+        { icon:'📚', label:'First Lesson', unlocked: totalLessons >= 1 },
+        { icon:'🔥', label:'On Fire', unlocked: totalLessons >= 5 },
+        { icon:'🏆', label:'Quiz Master', unlocked: totalQuizzes >= 3 },
+        { icon:'⭐', label:'Halfway There', unlocked: enrollments.some(en => {
+            const lessons = COURSE_LESSONS[en.course] || [];
+            const done = getProgress(en.course).length;
+            return lessons.length && done >= lessons.length / 2;
+        }) },
+        { icon:'🎉', label:'Course Complete', unlocked: enrollments.some(en => {
+            const lessons = COURSE_LESSONS[en.course] || [];
+            const done = getProgress(en.course).length;
+            return lessons.length && done === lessons.length;
+        }) }
+    ];
+    let achHtml = '';
+    achievements.forEach(a => {
+        const style = a.unlocked
+            ? 'background:rgba(250,204,21,0.15);border:2px solid rgba(250,204,21,0.4);color:#facc15;'
+            : 'background:rgba(100,116,139,0.1);border:2px solid rgba(100,116,139,0.2);color:#64748b;opacity:0.5;';
+        achHtml += `<div style="${style}padding:12px 16px;border-radius:12px;text-align:center;min-width:100px;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">${a.icon}</div>
+            <div style="font-size:0.75rem;font-weight:600;">${a.label}</div>
+        </div>`;
+    });
+    document.getElementById('profAchievements').innerHTML = achHtml;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadDashboard();
+
+async function loadCertificates() {
+    const tok = localStorage.getItem('nexlify_token') || sessionStorage.getItem('token');
+    const container = document.getElementById('overviewCertificates');
+    if (!container) return;
+
+    try {
+        const r = await fetch(API + '/api/certificates/list/' + encodeURIComponent(user.email), {
+            headers: tok ? { 'Authorization': 'Bearer ' + tok } : {}
+        });
+        const d = await r.json();
+        
+        if (d.success && d.certificates && d.certificates.length > 0) {
+            let html = '';
+            d.certificates.forEach(course => {
+                html += `
+                <div class="enrolled-card" style="border-left: 4px solid #10b981; margin-bottom: 1.5rem; width:100%;">
+                    <div style="display:flex; align-items:center; gap:1.5rem; width:100%; flex-wrap:wrap;">
+                        <div style="font-size:2.5rem; color:#facc15;"><i class="fas fa-award"></i></div>
+                        <div style="flex:1; min-width:200px;">
+                            <h2 style="font-size:1.3rem; margin-bottom:0.25rem; color:#fff;">${course}</h2>
+                            <p style="font-size:0.9rem; color:#94a3b8;">Verified Course Completion Certificate</p>
+                        </div>
+                        <button class="btn-primary" onclick="downloadCertificate('${course.replace(/'/g, "\\'")}')" style="padding: 0.8rem 1.5rem;">
+                            <i class="fas fa-download"></i> Download Certificate
+                        </button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `<div style="background:rgba(255,255,255,0.03); padding:2rem; border-radius:18px; border:1px dashed rgba(255,255,255,0.1); text-align:center; color:#94a3b8;"><p>No certificates earned yet. Complete all 6 modules of a course to receive yours!</p></div>`;
+        }
+    } catch (e) { console.error('Error loading certificates:', e); }
+}
+
+async function downloadCertificate(course) {
+    const tok = localStorage.getItem('nexlify_token') || sessionStorage.getItem('token');
+    try {
+        const response = await fetch(`${API}/api/certificates/download/${encodeURIComponent(user.email)}/${encodeURIComponent(course)}`, {
+            headers: tok ? { 'Authorization': 'Bearer ' + tok } : {}
+        });
+        if (!response.ok) throw new Error('Download failed');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `Certificate_${course.replace(/\s+/g, '_')}.svg`;
+        document.body.appendChild(a); a.click();
+        window.URL.revokeObjectURL(url); document.body.removeChild(a);
+    } catch (error) { showToast('❌ Failed to download certificate', 'error'); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "@nexlify/backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.16.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "csrf": "^3.1.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "express-session": "^1.19.0",
+    "firebase-admin": "^13.9.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.22.3",
+    "nodemailer": "^8.0.7",
+    "openai": "^6.37.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "socket.io": "^4.8.3",
+    "twilio": "^6.0.2"
+  }
+}

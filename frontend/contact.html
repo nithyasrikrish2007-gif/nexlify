@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Nexlify University</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo"><h2><i class="fas fa-university"></i> Nexlify</h2></div>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contact.html" class="nav-link active">Contact</a></li>
+                <li class="nav-auth"><a href="login.html" class="btn-login">Login</a></li>
+                <li class="nav-auth"><a href="signup.html" class="btn-signup">Get Started</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="signup.html" class="btn-signup">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-overlay" id="profileOverlay" onclick="closePanel()"></div>
+    <div class="profile-panel" id="profilePanel">
+        <div class="panel-header">
+            <div class="panel-avatar"><i class="fas fa-user-circle"></i></div>
+            <div class="panel-info">
+                <h3 id="panelName">Student</h3>
+                <span id="panelRole" class="panel-role">Student</span>
+                <p id="panelEmail" class="panel-email"></p>
+            </div>
+            <button class="panel-close" onclick="closePanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-menu">
+            <a href="dashboard.html" class="panel-item"><i class="fas fa-th-large"></i> My Dashboard</a>
+            <a href="courses.html" class="panel-item"><i class="fas fa-book-open"></i> Browse Courses</a>
+            <a href="contact.html" class="panel-item"><i class="fas fa-headset"></i> Support</a>
+            <button class="panel-item panel-logout" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <section class="about-hero">
+        <div class="about-hero-overlay"></div>
+        <div class="container">
+            <div class="about-hero-content">
+                <h1>Contact Us</h1>
+                <p>We're here to help. Reach out to our admissions team and we'll get back to you within 24 hours.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="story-section">
+        <div class="container">
+            <div class="story-content">
+                <div class="story-text">
+                    <h2>Get In Touch</h2>
+                    <p>Our admissions and support team is available Monday to Saturday, 9AM – 6PM.</p>
+                    <div class="story-features">
+                        <div class="feature-item"><i class="fas fa-envelope"></i><span>admissions@nexlify.edu</span></div>
+                        <div class="feature-item"><i class="fas fa-phone-alt"></i><span>+1 (555) 123-4567</span></div>
+                        <div class="feature-item"><i class="fas fa-map-marker-alt"></i><span>500 University Avenue, Silicon Valley, CA 94025</span></div>
+                        <div class="feature-item"><i class="fas fa-clock"></i><span>Mon – Sat: 9:00 AM – 6:00 PM</span></div>
+                    </div>
+                </div>
+                <div class="mv-card" style="padding:2.5rem;">
+                    <h3 style="color:#facc15;margin-bottom:1.5rem;font-size:1.4rem;">Send Us a Message</h3>
+                    <form id="contactForm">
+                        <input id="contact-name" type="text" class="form-input" placeholder="Your Full Name" required style="margin-bottom:1rem;">
+                        <input id="contact-email" type="email" class="form-input" placeholder="Your Email Address" required style="margin-bottom:1rem;">
+                        <input id="contact-subject" type="text" class="form-input" placeholder="Subject" style="margin-bottom:1rem;">
+                        <textarea id="contact-message" class="form-input" rows="5" placeholder="Your Message" required style="margin-bottom:1rem;"></textarea>
+                        <button type="submit" class="btn-primary" style="width:100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAP SECTION -->
+    <section style="padding:4rem 0 0;">
+        <div class="container">
+            <h2 class="section-title">Find Us</h2>
+            <p style="color:#94a3b8;text-align:center;margin-bottom:2rem;">Visit our main campus in Silicon Valley or reach out to any of our branch locations.</p>
+
+            <!-- Campus Tabs -->
+            <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:2rem;">
+                <button class="campus-tab active" onclick="switchCampus(this,'main')"><i class="fas fa-university"></i> Main Campus</button>
+                <button class="campus-tab" onclick="switchCampus(this,'east')"><i class="fas fa-building"></i> East Campus</button>
+                <button class="campus-tab" onclick="switchCampus(this,'west')"><i class="fas fa-building"></i> West Campus</button>
+            </div>
+
+            <style>
+                .campus-tab { padding:10px 22px;border-radius:50px;border:2px solid rgba(250,204,21,0.25);background:rgba(30,41,59,0.8);color:#94a3b8;font-weight:600;font-size:0.88rem;cursor:pointer;transition:all 0.2s;font-family:inherit;display:inline-flex;align-items:center;gap:8px; }
+                .campus-tab:hover { border-color:#facc15;color:#facc15; }
+                .campus-tab.active { background:linear-gradient(135deg,#facc15,#eab308);border-color:transparent;color:#1e293b;box-shadow:0 4px 15px rgba(250,204,21,0.35); }
+                .campus-panel { display:none; }
+                .campus-panel.active { display:block; }
+                .map-wrapper { border-radius:20px;overflow:hidden;border:2px solid rgba(250,204,21,0.2);box-shadow:0 10px 40px rgba(0,0,0,0.4);margin-bottom:2rem; }
+                .campus-info-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:3rem; }
+                .campus-info-card { background:rgba(30,41,59,0.95);border:1px solid rgba(250,204,21,0.15);border-radius:16px;padding:1.2rem 1.5rem;display:flex;align-items:flex-start;gap:12px; }
+                .campus-info-card i { background:linear-gradient(135deg,#facc15,#eab308);color:#1e293b;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0; }
+                .campus-info-card .ci-label { font-size:0.75rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px; }
+                .campus-info-card .ci-val { color:#f8fafc;font-weight:600;font-size:0.9rem; }
+            </style>
+
+            <!-- Main Campus -->
+            <div class="campus-panel active" id="panel-main">
+                <div class="map-wrapper">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.639290621064!2d-122.08624918469227!3d37.38605197982946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb7495bec0189%3A0x7c17d44a466baf9b!2sGoogleplex!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+                        width="100%" height="420" style="border:0;display:block;" allowfullscreen loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="campus-info-grid">
+                    <div class="campus-info-card"><i class="fas fa-map-marker-alt"></i><div><div class="ci-label">Address</div><div class="ci-val">500 University Ave, Silicon Valley, CA 94025</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-phone"></i><div><div class="ci-label">Phone</div><div class="ci-val">+1 (555) 123-4567</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-clock"></i><div><div class="ci-label">Hours</div><div class="ci-val">Mon–Sat: 9AM – 6PM</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-car"></i><div><div class="ci-label">Parking</div><div class="ci-val">Free parking available on campus</div></div></div>
+                </div>
+            </div>
+
+            <!-- East Campus -->
+            <div class="campus-panel" id="panel-east">
+                <div class="map-wrapper">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0197226083!2d-122.41941518468!3d37.77492997975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858080b8e7e5b7%3A0x5f9c3e5d8b1a2c3d!2sSan%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1620000000001!5m2!1sen!2sus"
+                        width="100%" height="420" style="border:0;display:block;" allowfullscreen loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="campus-info-grid">
+                    <div class="campus-info-card"><i class="fas fa-map-marker-alt"></i><div><div class="ci-label">Address</div><div class="ci-val">200 Market St, San Francisco, CA 94105</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-phone"></i><div><div class="ci-label">Phone</div><div class="ci-val">+1 (555) 234-5678</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-clock"></i><div><div class="ci-label">Hours</div><div class="ci-val">Mon–Fri: 9AM – 5PM</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-subway"></i><div><div class="ci-label">Transit</div><div class="ci-val">BART & Muni accessible</div></div></div>
+                </div>
+            </div>
+
+            <!-- West Campus -->
+            <div class="campus-panel" id="panel-west">
+                <div class="map-wrapper">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3305.7354219!2d-118.24368!3d34.05223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fefa1835d8d31!2sLos%20Angeles%2C%20CA!5e0!3m2!1sen!2sus!4v1620000000002!5m2!1sen!2sus"
+                        width="100%" height="420" style="border:0;display:block;" allowfullscreen loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="campus-info-grid">
+                    <div class="campus-info-card"><i class="fas fa-map-marker-alt"></i><div><div class="ci-label">Address</div><div class="ci-val">350 S Grand Ave, Los Angeles, CA 90071</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-phone"></i><div><div class="ci-label">Phone</div><div class="ci-val">+1 (555) 345-6789</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-clock"></i><div><div class="ci-label">Hours</div><div class="ci-val">Mon–Sat: 9AM – 6PM</div></div></div>
+                    <div class="campus-info-card"><i class="fas fa-bus"></i><div><div class="ci-label">Transit</div><div class="ci-val">Metro & Bus accessible</div></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function switchCampus(btn, id) {
+            document.querySelectorAll('.campus-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.campus-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('panel-' + id).classList.add('active');
+        }
+    </script>
+
+    <section class="features" style="padding:4rem 0;">
+        <div class="container">
+            <h2 class="section-title">Why Students Choose Nexlify</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-headset"></i></div>
+                    <h3>24/7 Support</h3>
+                    <p>Round-the-clock student support for academic, technical, and personal queries.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <h3>Multiple Campuses</h3>
+                    <p>Campuses across 5 cities with easy access to transport, housing, and amenities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                    <h3>Live Chat</h3>
+                    <p>Instant answers from our admissions team via live chat on our portal.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-university"></i> Nexlify</div>
+                    <p>Empowering students with world-class education, industry exposure, and career-ready skills since 1995.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="courses.html">Full Stack Dev</a></li>
+                        <li><a href="courses.html">AI & ML</a></li>
+                        <li><a href="courses.html">Cyber Security</a></li>
+                        <li><a href="courses.html">UI/UX Design</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#">admissions@nexlify.edu</a></li>
+                        <li><a href="#">+1 (555) 123-4567</a></li>
+                        <li><a href="#">Silicon Valley, CA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© 2025 Nexlify University. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const name    = document.getElementById('contact-name').value.trim();
+            const email   = document.getElementById('contact-email').value.trim();
+            const subject = document.getElementById('contact-subject').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            if (!name || !email || !message) return alert('Please fill in all required fields.');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            try {
+                const res = await fetch('http://localhost:8080/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, subject, message })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Message sent successfully! We will get back to you soon.');
+                    this.reset();
+                } else {
+                    alert(data.message || 'Failed to send message.');
+                }
+            } catch (err) {
+                alert('Server error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
+            }
+        });
+    </script>
+</body>
+</html>

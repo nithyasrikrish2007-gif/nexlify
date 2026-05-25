@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses | Nexlify University</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo"><h2><i class="fas fa-university"></i> Nexlify</h2></div>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="courses.html" class="nav-link active">Courses</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-auth"><a href="login.html" class="btn-login">Login</a></li>
+                <li class="nav-auth"><a href="signup.html" class="btn-signup">Get Started</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="signup.html" class="btn-signup">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-overlay" id="profileOverlay" onclick="closePanel()"></div>
+    <div class="profile-panel" id="profilePanel">
+        <div class="panel-header">
+            <div class="panel-avatar"><i class="fas fa-user-circle"></i></div>
+            <div class="panel-info">
+                <h3 id="panelName">Student</h3>
+                <span id="panelRole" class="panel-role">Student</span>
+                <p id="panelEmail" class="panel-email"></p>
+            </div>
+            <button class="panel-close" onclick="closePanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-menu">
+            <a href="dashboard.html" class="panel-item"><i class="fas fa-th-large"></i> My Dashboard</a>
+            <a href="courses.html" class="panel-item"><i class="fas fa-book-open"></i> Browse Courses</a>
+            <a href="contact.html" class="panel-item"><i class="fas fa-headset"></i> Support</a>
+            <button class="panel-item panel-logout" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <section class="about-hero">
+        <div class="about-hero-overlay"></div>
+        <div class="container">
+            <div class="about-hero-content">
+                <h1>Our Programs</h1>
+                <p>Industry-aligned courses designed by experts to launch your career at top companies worldwide.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+
+            <!-- ── SEARCH & FILTER BAR ── -->
+            <div style="max-width:520px;margin:0 auto 1.5rem;position:relative;">
+                <i class="fas fa-search" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-secondary);pointer-events:none;"></i>
+                <input id="course-search" type="text" placeholder="Search courses…"
+                    style="width:100%;padding:0.85rem 1rem 0.85rem 2.8rem;background:var(--card-bg);border:1.5px solid var(--border-color);border-radius:50px;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:0.95rem;outline:none;transition:all 0.3s;"
+                    oninput="filterCourses()">
+            </div>
+
+            <!-- ── FILTER CHIPS ── -->
+            <div id="filter-chips" style="display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;margin-bottom:2.5rem;">
+                <button class="course-chip active" data-filter="all"      onclick="setChip(this)">All <span class="chip-count">6</span></button>
+                <button class="course-chip"        data-filter="technical" onclick="setChip(this)">Technical <span class="chip-count">3</span></button>
+                <button class="course-chip"        data-filter="non-technical" onclick="setChip(this)">Non-Technical <span class="chip-count">3</span></button>
+                <button class="course-chip"        data-filter="long"     onclick="setChip(this)">Long Term <span class="chip-count">3</span></button>
+                <button class="course-chip"        data-filter="short"    onclick="setChip(this)">Short Term <span class="chip-count">3</span></button>
+            </div>
+
+            <!-- ── ALL COURSE CARDS (single unified grid) ── -->
+            <div id="courses-grid" class="features-grid">
+
+                <div class="feature-card course-card" data-category="technical" data-duration="long" data-name="full stack development mern cloud system design">
+                    <div class="course-badge">Long Term</div>
+                    <div class="feature-icon"><i class="fas fa-code"></i></div>
+                    <h3>Full Stack Development</h3>
+                    <p>Master MERN stack, Cloud deployment, and System Design.</p>
+                    <div class="placement-stats">Duration: 12 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('Full Stack Development')">Enroll Now</button>
+                </div>
+
+                <div class="feature-card course-card" data-category="technical" data-duration="short" data-name="cyber security ethical hacking network ceh">
+                    <div class="course-badge short">Short Term</div>
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Cyber Security</h3>
+                    <p>Ethical hacking, network security, and threat assessment for modern enterprises. CEH certified curriculum.</p>
+                    <div class="placement-stats">Duration: 3 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('Cyber Security')">Enroll Now</button>
+                </div>
+
+                <div class="feature-card course-card" data-category="technical" data-duration="long" data-name="ai machine learning deep learning python data science neural">
+                    <div class="course-badge">Long Term</div>
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <h3>AI & Machine Learning</h3>
+                    <p>Deep learning, Neural networks, and Python for Data Science. Work on real-world AI projects from day one.</p>
+                    <div class="placement-stats">Duration: 9 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('AI & Machine Learning')">Enroll Now</button>
+                </div>
+
+                <div class="feature-card course-card" data-category="non-technical" data-duration="long" data-name="digital marketing seo sem social media brand">
+                    <div class="course-badge">Long Term</div>
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Digital Marketing</h3>
+                    <p>SEO, SEM, Social Media, and Brand Management. Learn to lead global marketing campaigns with real budgets.</p>
+                    <div class="placement-stats">Duration: 6 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('Digital Marketing')">Enroll Now</button>
+                </div>
+
+                <div class="feature-card course-card" data-category="non-technical" data-duration="short" data-name="ui ux design figma prototyping user experience">
+                    <div class="course-badge short">Short Term</div>
+                    <div class="feature-icon"><i class="fas fa-pen-nib"></i></div>
+                    <h3>UI/UX Design</h3>
+                    <p>Figma mastery, User Psychology, and Prototyping for high-conversion apps and digital products.</p>
+                    <div class="placement-stats">Duration: 2 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('UI/UX Design')">Enroll Now</button>
+                </div>
+
+                <div class="feature-card course-card" data-category="non-technical" data-duration="short" data-name="project management scrum kanban pmp leadership agile">
+                    <div class="course-badge short">Short Term</div>
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
+                    <h3>Project Management</h3>
+                    <p>Scrum, Kanban, and Leadership skills for technical team management. PMP aligned curriculum.</p>
+                    <div class="placement-stats">Duration: 3 Months</div>
+                    <button class="btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;" onclick="openEnroll('Project Management')">Enroll Now</button>
+                </div>
+
+            </div>
+
+            <!-- ── NO RESULTS ── -->
+            <div id="no-results" style="display:none;text-align:center;padding:3rem 1rem;">
+                <i class="fas fa-search" style="font-size:2.5rem;color:var(--border-color);display:block;margin-bottom:1rem;"></i>
+                <h3 style="color:var(--text-primary);margin-bottom:0.5rem;">No courses found</h3>
+                <p style="color:var(--text-secondary);">Try a different keyword or filter.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <style>
+        .course-chip {
+            padding: 0.45rem 1rem;
+            border-radius: 50px;
+            border: 1.5px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .course-chip:hover {
+            border-color: #facc15;
+            color: #facc15;
+        }
+        .course-chip.active {
+            background: rgba(250,204,21,0.12);
+            border-color: #facc15;
+            color: #facc15;
+        }
+        .chip-count {
+            background: rgba(250,204,21,0.2);
+            color: #facc15;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.05rem 0.45rem;
+            border-radius: 10px;
+        }
+        #course-search:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 3px rgba(250,204,21,0.12);
+        }
+        .course-card-hidden {
+            display: none !important;
+        }
+    </style>
+
+    <script>
+        let activeFilter = 'all';
+
+        function setChip(btn) {
+            document.querySelectorAll('.course-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.filter;
+            filterCourses();
+        }
+
+        function filterCourses() {
+            const query = document.getElementById('course-search').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#courses-grid .course-card');
+            let visible = 0;
+
+            cards.forEach(card => {
+                const name     = card.dataset.name || '';
+                const category = card.dataset.category || '';
+                const duration = card.dataset.duration || '';
+
+                const matchSearch = !query || name.includes(query) ||
+                    card.querySelector('h3').textContent.toLowerCase().includes(query) ||
+                    card.querySelector('p').textContent.toLowerCase().includes(query);
+
+                const matchFilter = activeFilter === 'all' ||
+                    category === activeFilter ||
+                    duration === activeFilter;
+
+                if (matchSearch && matchFilter) {
+                    card.classList.remove('course-card-hidden');
+                    visible++;
+                } else {
+                    card.classList.add('course-card-hidden');
+                }
+            });
+
+            document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+        }
+    </script>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Not Sure Which Program to Choose?</h2>
+            <p>Talk to our academic advisors and find the perfect course for your career goals</p>
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn-primary btn-large">Talk to an Advisor</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-university"></i> Nexlify</div>
+                    <p>Empowering students with world-class education, industry exposure, and career-ready skills since 1995.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="courses.html">Full Stack Dev</a></li>
+                        <li><a href="courses.html">AI & ML</a></li>
+                        <li><a href="courses.html">Cyber Security</a></li>
+                        <li><a href="courses.html">UI/UX Design</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#">admissions@nexlify.edu</a></li>
+                        <li><a href="#">+1 (555) 123-4567</a></li>
+                        <li><a href="#">Silicon Valley, CA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© 2025 Nexlify University. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+
+    <div id="enroll-modal">
+        <div class="enroll-box">
+            <button class="enroll-close" onclick="closeEnroll()">&#10005;</button>
+            <h2>🎓 Enroll at Nexlify</h2>
+            <input class="enroll-input" placeholder="Full Name">
+            <input class="enroll-input" placeholder="Email Address">
+            <input class="enroll-input" placeholder="Phone Number">
+            <select class="enroll-input" id="enroll-course">
+                <option value="">Select Program</option>
+                <option>Full Stack Development</option>
+                <option>Cyber Security</option>
+                <option>AI & Machine Learning</option>
+                <option>Digital Marketing</option>
+                <option>UI/UX Design</option>
+                <option>Project Management</option>
+            </select>
+            <button class="enroll-submit" onclick="submitEnroll()">Submit Application</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Nexlify University</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-body">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-university"></i> Nexlify</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-auth"><a href="login.html" class="btn-login">Login</a></li>
+                <li class="nav-auth"><a href="signup.html" class="btn-signup">Get Started</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <button id="theme-toggle" title="Toggle Dark/Light Mode"></button>
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="signup.html" class="btn-signup">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <div class="container">
+            <div class="mv-card auth-card">
+                <div class="auth-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to access your Nexlify dashboard</p>
+                </div>
+                <form id="loginForm">
+                    <div class="form-group">
+
+                        <label>Email Address</label>
+                        <input type="email" class="form-input" placeholder="name@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-eye">
+                            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                            <i class="fas fa-eye eye-toggle" onclick="toggleEye('loginPassword', this)"></i>
+                        </div>
+                    </div>
+                    <!-- CAPTCHA START -->
+<!-- CAPTCHA START -->
+<div class="captcha-card">
+
+    <p class="captcha-title">Please solve the CAPTCHA:</p>
+
+    <div class="captcha-row">
+        <div id="captchaBox" class="captcha-display"></div>
+
+        <button type="button" class="captcha-refresh" onclick="generateCaptcha()">
+            Refresh
+        </button>
+    </div>
+
+    <input type="text" id="captchaInput"
+           class="captcha-input"
+           placeholder="Enter captcha here" required>
+
+</div>
+
+<!-- CAPTCHA END -->
+                    <div class="auth-options">
+                        <label><input type="checkbox" id="rememberMe"> Remember me</label>
+                        <a href="forgot-password.html" class="gold-link">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%;margin-top:1.5rem;">Sign In</button>
+                    <div class="divider">
+    <span>OR</span>
+</div>
+
+<a href="/auth/google" class="social-btn google-btn">
+    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google">
+    Continue with Google
+</a>
+
+<a href="/auth/github" class="social-btn github-btn">
+    <i class="fab fa-github"></i>
+    Continue with GitHub
+</a>
+                </form>
+                <p class="auth-footer">Don't have an account? <a href="signup.html" class="gold-link">Create Account</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+  <script>
+function generateCaptcha() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+    window.captchaText = "";
+
+    for (let i = 0; i < 6; i++) {
+        window.captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    document.getElementById("captchaBox").innerText = window.captchaText;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    generateCaptcha();
+});
+</script>
+</body>
+</html>

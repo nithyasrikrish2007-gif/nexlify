@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Nexlify University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark:       #020617;
+            --bg-mid:        #080d1a;
+            --bg-card:       #0f172a;
+            --bg-card2:      #1e293b;
+            --bg-card3:      #162032;
+            --accent:        #facc15;
+            --accent-hover:  #fbbf24;
+            --accent-dim:    rgba(250,204,21,0.10);
+            --accent-border: rgba(250,204,21,0.22);
+            --text-main:     #f1f5f9;
+            --text-muted:    #94a3b8;
+            --text-faint:    #64748b;
+            --border:        rgba(255,255,255,0.06);
+            --border2:       rgba(255,255,255,0.10);
+            --success:       #10b981;
+            --error:         #ef4444;
+            --warning:       #f59e0b;
+            --info:          #60a5fa;
+            --purple:        #a78bfa;
+            --sidebar-w:     260px;
+            --header-h:      68px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* ══ SIDEBAR ══════════════════════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-mid);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            padding: 1.25rem 0.875rem;
+            position: fixed; height: 100vh; z-index: 200;
+            overflow-y: auto; overflow-x: hidden;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0.5rem 0.75rem 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .logo-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 1rem; flex-shrink: 0;
+        }
+        .logo-text { font-size: 1.1rem; font-weight: 900; color: var(--accent); letter-spacing: 0.5px; }
+        .logo-sub { font-size: 0.6rem; color: var(--text-faint); letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 1px; }
+
+        .sec-label {
+            font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.6px; color: var(--text-faint);
+            padding: 0 0.75rem; margin: 1.25rem 0 0.4rem;
+        }
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+        .nav-item {
+            padding: 9px 12px; border-radius: 10px;
+            cursor: pointer; transition: all 0.18s;
+            color: var(--text-muted);
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.845rem; font-weight: 500;
+            position: relative;
+        }
+        .nav-item i { width: 18px; text-align: center; font-size: 0.88rem; flex-shrink: 0; }
+        .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-main); }
+        .nav-item.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+        .nav-badge {
+            margin-left: auto; padding: 2px 7px;
+            border-radius: 20px; font-size: 0.6rem; font-weight: 800;
+            min-width: 18px; text-align: center; display: none;
+        }
+        .nb-red    { background: var(--error);   color: #fff; }
+        .nb-yellow { background: var(--warning);  color: #000; }
+        .nb-green  { background: var(--success);  color: #fff; }
+        .nb-blue   { background: var(--info);     color: #000; }
+
+        .sidebar-bottom { margin-top: auto; padding-top: 1rem; }
+        .admin-card {
+            background: var(--bg-card2);
+            border-radius: 12px; padding: 0.875rem;
+            border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+        .admin-av {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent-dim);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 0.9rem; flex-shrink: 0;
+            border: 1px solid var(--accent-border);
+        }
+        .aname { font-size: 0.82rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+        .arole { font-size: 0.65rem; color: var(--accent); font-weight: 600; letter-spacing: 0.3px; }
+        .logout-btn {
+            width: 100%; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-weight: 600; font-size: 0.8rem; padding: 9px;
+            border: 1px solid rgba(239,68,68,0.22);
+            background: rgba(239,68,68,0.05);
+            color: var(--error); transition: 0.18s;
+            font-family: inherit;
+        }
+        .logout-btn:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.5); }
+
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 199;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ══ MAIN ══════════════════════════════════════════════════ */
+        .main-content { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* ══ TOP BAR ═══════════════════════════════════════════════ */
+        .topbar {
+            height: var(--header-h);
+            background: var(--bg-mid);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 2rem;
+            position: sticky; top: 0; z-index: 100;
+            gap: 1rem;
+        }
+        .hamburger-btn {
+            display: none; background: none; border: none;
+            color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
+            padding: 6px; border-radius: 8px; transition: 0.18s;
+        }
+        .hamburger-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-main); border-radius: 10px; padding: 0.65rem 1rem;
+            font-size: 0.88rem; cursor: pointer; transition: 0.18s; font-family: inherit;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.16); }
+        .page-breadcrumb { flex: 1; }
+        .page-title { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+        .page-sub { color: var(--text-muted); font-size: 0.76rem; margin-top: 1px; }
+        .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+        .clock-badge {
+            color: var(--text-muted); font-size: 0.76rem;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; padding: 5px 11px;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap;
+        }
+        .clock-badge i { color: var(--accent); }
+        .notif-btn {
+            position: relative; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 10px;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-muted); transition: 0.18s;
+        }
+        .notif-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+        .notif-dot {
+            position: absolute; top: 5px; right: 5px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--error); border: 2px solid var(--bg-mid);
+            display: none;
+            animation: pulse-dot 2s infinite;
+        }
+        .notif-dot.show { display: block; }
+        @keyframes pulse-dot {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        .admin-chip {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 5px 12px;
+        }
+        .admin-chip-av {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: var(--accent-dim);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 0.7rem;
+        }
+        .admin-chip-name { font-size: 0.8rem; font-weight: 600; }
+
+        /* ══ CONTENT WRAPPER ═══════════════════════════════════════ */
+        .content-wrap { padding: 1.75rem 2rem; flex: 1; }
+
+        /* ══ SECTIONS ══════════════════════════════════════════════ */
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: sectionIn 0.28s ease; }
+        @keyframes sectionIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ══ STATS GRID ════════════════════════════════════════════ */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 14px; border: 1px solid var(--border);
+            padding: 1.25rem 1.25rem 1.1rem;
+            display: flex; gap: 14px; align-items: flex-start;
+            transition: 0.2s; cursor: default;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::after {
+            content: ''; position: absolute; inset: 0;
+            opacity: 0; transition: opacity 0.2s;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
+        }
+        .stat-card:hover { border-color: var(--accent-border); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+        .stat-card:hover::after { opacity: 1; }
+        .stat-icon {
+            width: 42px; height: 42px; border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.05rem; flex-shrink: 0;
+        }
+        .si-y { background: rgba(250,204,21,0.12); color: var(--accent); }
+        .si-b { background: rgba(96,165,250,0.12);  color: var(--info); }
+        .si-g { background: rgba(16,185,129,0.12);  color: var(--success); }
+        .si-r { background: rgba(239,68,68,0.12);   color: var(--error); }
+        .si-p { background: rgba(167,139,250,0.12); color: var(--purple); }
+        .si-o { background: rgba(245,158,11,0.12);  color: var(--warning); }
+        .stat-body { flex: 1; min-width: 0; }
+        .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+        .stat-val { font-size: 1.9rem; font-weight: 900; color: #fff; line-height: 1.1; margin-top: 4px; }
+        .stat-note { font-size: 0.68rem; color: var(--text-faint); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+        .stat-note b { color: var(--warning); font-weight: 700; }
+        .stat-note .up   { color: var(--success); }
+        .stat-note .down { color: var(--error); }
+
+        /* ══ OVERVIEW GRID ═════════════════════════════════════════ */
+        .ov-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+
+        /* ══ SECTION BAR ═══════════════════════════════════════════ */
+        .sec-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem; gap: 0.75rem; flex-wrap: wrap;
+        }
+        .sec-title { font-size: 0.94rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .sec-title i { color: var(--accent); }
+
+        /* ══ CARD ══════════════════════════════════════════════════ */
+        .card {
+            background: var(--bg-card); border-radius: 14px;
+            border: 1px solid var(--border); padding: 1.25rem;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+        }
+
+        /* ══ TABLE ═════════════════════════════════════════════════ */
+        .tbl-wrap { background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(0,0,0,0.25); padding: 0.8rem 1.1rem; color: var(--text-faint); font-weight: 700; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.9px; white-space: nowrap; }
+        td { padding: 0.85rem 1.1rem; border-top: 1px solid var(--border); vertical-align: middle; font-size: 0.855rem; }
+        tr:hover td { background: rgba(255,255,255,0.015); }
+        .td-m { color: var(--text-muted); }
+        .td-s { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+        /* ══ BADGES ════════════════════════════════════════════════ */
+        .badge { padding: 3px 9px; border-radius: 50px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 4px; }
+        .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: inline-block; }
+        .b-pending  { background: rgba(245,158,11,0.12); color: var(--warning); }
+        .b-approved { background: rgba(16,185,129,0.12);  color: var(--success); }
+        .b-rejected { background: rgba(239,68,68,0.10);   color: var(--error); }
+        .b-active   { background: rgba(96,165,250,0.12);  color: var(--info); }
+        .b-enroll   { background: rgba(167,139,250,0.1);  color: var(--purple); }
+
+        /* ══ BUTTONS ═══════════════════════════════════════════════ */
+        .btn { padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: 0.18s; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; }
+        .btn-approve { background: rgba(16,185,129,0.1);  color: var(--success); border-color: rgba(16,185,129,0.22); }
+        .btn-approve:hover { background: var(--success); color: #000; }
+        .btn-reject  { background: rgba(239,68,68,0.08); color: var(--error);   border-color: rgba(239,68,68,0.22); }
+        .btn-reject:hover  { background: var(--error); color: #fff; }
+        .btn-view    { background: rgba(250,204,21,0.08); color: var(--accent);  border-color: var(--accent-border); }
+        .btn-view:hover    { background: var(--accent); color: #000; }
+        .btn-outline { background: none; color: var(--text-muted); border-color: var(--border2); }
+        .btn-outline:hover { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+        .btn-primary-sm { background: var(--accent); color: #000; border: none; font-weight: 700; }
+        .btn-primary-sm:hover { background: var(--accent-hover); }
+
+        /* ══ SEARCH / FILTER ═══════════════════════════════════════ */
+        .filter-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-btn { padding: 5px 13px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border2); cursor: pointer; background: none; color: var(--text-muted); transition: 0.18s; font-family: inherit; }
+        .filter-btn:hover { color: var(--text-main); border-color: rgba(255,255,255,0.18); }
+        .filter-btn.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0,0,0,0) !important;
+            border: 0 !important;
+            white-space: nowrap !important;
+        }
+        .search-wrap { position: relative; }
+        .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.75rem; pointer-events: none; }
+        .search-input { background: var(--bg-card2); border: 1px solid var(--border2); border-radius: 8px; padding: 6px 10px 6px 30px; color: var(--text-main); font-size: 0.8rem; outline: none; min-width: 200px; font-family: inherit; transition: 0.2s; }
+        .search-input:focus { border-color: var(--accent-border); }
+
+        /* ══ COURSE BARS ═══════════════════════════════════════════ */
+        .c-row { padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .c-row:last-child { border-bottom: none; }
+        .c-row-top { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; }
+        .c-bar { height: 5px; background: var(--border2); border-radius: 4px; }
+        .c-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f59e0b); border-radius: 4px; width: 0; transition: width 1s ease; }
+
+        /* ══ QI CARDS ══════════════════════════════════════════════ */
+        .qi-card { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--bg-dark); border-radius: 10px; border: 1px solid var(--border); }
+        .qi-label { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 7px; }
+        .qi-val { font-weight: 800; font-size: 1rem; }
+
+        /* ══ ACTIVITY FEED ═════════════════════════════════════════ */
+        .activity-feed { display: flex; flex-direction: column; gap: 0; }
+        .act-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .act-item:last-child { border-bottom: none; }
+        .act-dot {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; flex-shrink: 0; margin-top: 2px;
+        }
+        .act-y { background: rgba(250,204,21,0.12); color: var(--accent); }
+        .act-g { background: rgba(16,185,129,0.12);  color: var(--success); }
+        .act-b { background: rgba(96,165,250,0.12);  color: var(--info); }
+        .act-r { background: rgba(239,68,68,0.12);   color: var(--error); }
+        .act-body { flex: 1; min-width: 0; }
+        .act-text { font-size: 0.82rem; line-height: 1.45; }
+        .act-time { font-size: 0.67rem; color: var(--text-faint); margin-top: 2px; }
+
+        /* ══ AVATAR INITIALS ═══════════════════════════════════════ */
+        .av-init {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-weight: 800; color: var(--accent);
+            background: var(--accent-dim); border: 1px solid var(--accent-border);
+            flex-shrink: 0;
+        }
+        .td-user { display: flex; align-items: center; gap: 10px; }
+
+        /* ══ STATUS SUMMARY BAR ════════════════════════════════════ */
+        .status-bar {
+            display: flex; gap: 1rem; flex-wrap: wrap;
+            padding: 0.8rem 1.1rem;
+            background: var(--bg-card2);
+            border-radius: 10px; border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+        .sb-item { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; }
+        .sb-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* ══ CHAT ══════════════════════════════════════════════════ */
+        .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1.25rem; height: calc(100vh - 200px); min-height: 520px; }
+        .chat-list-panel { background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-list-hdr { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .chat-list-hdr-title { font-weight: 700; font-size: 0.86rem; display: flex; align-items: center; gap: 7px; }
+        .chat-list-hdr-title i { color: var(--success); font-size: 0.6rem; }
+        .sess-count { font-size: 0.7rem; color: var(--text-muted); }
+        .chat-sess-list { flex: 1; overflow-y: auto; }
+        .sess-item { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.18s; }
+        .sess-item:hover { background: rgba(255,255,255,0.03); }
+        .sess-item.active { background: var(--accent-dim); border-left: 3px solid var(--accent); }
+        .si-row { display: flex; align-items: center; gap: 8px; }
+        .si-av { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card2); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--accent); flex-shrink: 0; }
+        .si-name { font-weight: 700; font-size: 0.84rem; }
+        .si-email { font-size: 0.7rem; color: var(--text-muted); }
+        .si-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .si-time { font-size: 0.65rem; color: var(--text-faint); }
+        .unread-badge { background: var(--accent); color: #000; font-size: 0.6rem; font-weight: 800; padding: 2px 6px; border-radius: 20px; min-width: 18px; text-align: center; animation: pulse-dot 2s infinite; }
+
+        .chat-win { background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-win-hdr { padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .cw-av { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 800; font-size: 0.8rem; flex-shrink: 0; border: 1px solid var(--accent-border); }
+        .cw-name { font-weight: 700; font-size: 0.88rem; }
+        .cw-email { font-size: 0.7rem; color: var(--text-muted); }
+        .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-left: auto; flex-shrink: 0; }
+        .chat-msgs { flex: 1; padding: 1.1rem 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; }
+        .chat-empty { text-align: center; color: var(--text-muted); margin: auto; }
+        .chat-empty i { font-size: 2.5rem; opacity: 0.2; display: block; margin-bottom: 0.6rem; }
+        .chat-empty p { font-size: 0.82rem; }
+
+        .msg-wrap { display: flex; flex-direction: column; max-width: 74%; }
+        .msg-wrap.from-user  { align-self: flex-start; }
+        .msg-wrap.from-admin { align-self: flex-end; }
+        .msg-lbl { font-size: 0.65rem; font-weight: 700; margin-bottom: 3px; color: var(--text-muted); }
+        .from-admin .msg-lbl { text-align: right; color: var(--accent); }
+        .msg-bubble { padding: 9px 14px; border-radius: 14px; font-size: 0.84rem; line-height: 1.55; word-break: break-word; }
+        .from-user  .msg-bubble { background: var(--bg-card2); border: 1px solid var(--border2); border-bottom-left-radius: 4px; }
+        .from-admin .msg-bubble { background: linear-gradient(135deg, var(--accent), #f59e0b); color: #000; font-weight: 600; border-bottom-right-radius: 4px; }
+        .msg-time { font-size: 0.62rem; color: var(--text-faint); margin-top: 2px; }
+        .from-admin .msg-time { text-align: right; }
+
+        .chat-input-row { padding: 0.875rem 1.1rem; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+        .chat-txt { flex: 1; background: var(--bg-dark); border: 1px solid var(--border2); padding: 9px 15px; border-radius: 50px; color: var(--text-main); font-size: 0.84rem; outline: none; transition: 0.2s; font-family: inherit; }
+        .chat-txt:focus { border-color: var(--accent-border); }
+        .chat-txt:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chat-send { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.84rem; transition: 0.18s; flex-shrink: 0; }
+        .chat-send:hover:not(:disabled) { background: var(--accent-hover); transform: scale(1.06); }
+        .chat-send:disabled { opacity: 0.35; cursor: not-allowed; }
+        .quick-replies-bar { padding: 0.5rem 1.1rem 0; display: flex; gap: 6px; flex-wrap: wrap; border-top: 1px solid var(--border); }
+        .qr-btn { background: none; border: 1px solid var(--border2); color: var(--text-muted); border-radius: 20px; padding: 3px 11px; font-size: 0.72rem; cursor: pointer; font-family: inherit; transition: 0.18s; }
+        .qr-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+
+        /* ══ MODAL ═════════════════════════════════════════════════ */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border2); border-radius: 20px; padding: 2rem; max-width: 520px; width: 90%; position: relative; box-shadow: 0 24px 60px rgba(0,0,0,0.55); animation: sectionIn 0.2s ease; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; padding: 4px; transition: 0.18s; }
+        .modal-close:hover { color: var(--text-main); }
+        .modal-title { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+        .modal-field { margin-bottom: 0.85rem; }
+        .modal-field label { display: block; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-faint); margin-bottom: 3px; }
+        .modal-val { color: var(--text-main); font-size: 0.86rem; font-weight: 500; }
+        .modal-body-txt { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 0.875rem; border: 1px solid var(--border); color: var(--text-main); font-size: 0.84rem; line-height: 1.7; white-space: pre-wrap; margin-top: 3px; }
+
+        /* ══ EMPTY & LOADING ═══════════════════════════════════════ */
+        .empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); }
+        .empty i { font-size: 2.2rem; opacity: 0.25; display: block; margin-bottom: 0.75rem; }
+        .empty p { font-size: 0.82rem; }
+        .loading-cell { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .loading-cell i { margin-right: 6px; }
+
+        /* ══ SCROLLBAR ═════════════════════════════════════════════ */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+        /* ══ TOAST ═════════════════════════════════════════════════ */
+        .dash-toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border2);
+            border-left: 3px solid var(--accent);
+            border-radius: 12px; padding: 0.875rem 1.25rem;
+            font-size: 0.84rem; color: var(--text-main);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 9999; max-width: 340px;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.3s ease; pointer-events: none;
+        }
+        .dash-toast.show { transform: translateY(0); opacity: 1; }
+        .dash-toast.t-success { border-left-color: var(--success); }
+        .dash-toast.t-error   { border-left-color: var(--error); }
+        .dash-toast.t-info    { border-left-color: var(--info); }
+
+        /* ══ CONNECTION STATUS ═════════════════════════════════════ */
+        .conn-status { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-faint); }
+        .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
+        .conn-dot.online { background: var(--success); animation: pulse-dot 3s infinite; }
+
+        /* ══ RESPONSIVE ════════════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            .ov-grid { grid-template-columns: 1fr; }
+            .chat-layout { grid-template-columns: 240px 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar-logo { padding: 0.5rem 0.5rem 0.5rem; margin-bottom: 1rem; }
+            .logo-text { font-size: 1rem; }
+            .logo-sub { font-size: 0.55rem; }
+
+            /* Prevent content from overlapping the sticky topbar on mobile */
+            .main-content { padding-top: 0; }
+            header.topbar { position: sticky; top: 0; }
+            .content-wrap { padding-top: 1rem; }
+
+
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .hamburger-btn { display: flex; }
+            .main-content { margin-left: 0; }
+            .content-wrap { padding: 1.25rem 1rem; }
+            .topbar { padding: 0 1rem; }
+            .page-title { font-size: 0.85rem; }
+
+            /* Compact back button on phones: only arrow (do not hide other navbar controls) */
+            .back-btn { padding: 0.35rem; width: 38px; height: 38px; justify-content: center; }
+            .back-btn i { font-size: 1rem; }
+            .back-btn-text { display: none; }
+
+            /* Keep right-side controls visible */
+            .topbar-right { flex-shrink: 0; }
+            .clock-badge { flex-shrink: 0; }
+            #theme-toggle-admin { flex-shrink: 0; }
+
+            /* Keep subtitle within topbar on small screens */
+            .page-sub {
+                font-size: 0.62rem;
+
+                margin-top: 1px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+
+            .topbar-right { gap: 0.5rem; }
+            .clock-badge { font-size: 0.7rem; padding: 4px 8px; }
+            .notif-btn { width: 32px; height: 32px; font-size: 1rem; }
+
+            /* Table responsiveness for tablets and phones */
+            .tbl-wrap { 
+                overflow-x: auto; 
+                -webkit-overflow-scrolling: touch; 
+                border-radius: 10px;
+                width: 100%;
+            }
+            /* On mobile, allow horizontal scrolling for wide tables without cutting off half */
+            .tbl-wrap { 
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                overflow-y: hidden;
+                width: 100%;
+            }
+            table { min-width: 100%; width: 100%; }
+            th, td { padding: 0.8rem 1rem; }
+
+
+            .admin-chip { padding: 4px 8px; }
+            .admin-chip-av { width: 24px; height: 24px; font-size: 0.6rem; }
+            .admin-chip-name { font-size: 0.75rem; }
+
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .chat-layout { grid-template-columns: 1fr; height: auto; }
+            .ov-grid { grid-template-columns: 1fr; } /* Stack overview grid items */
+            .ov-grid + div { grid-template-columns: 1fr; } /* Stack recent apps and activity */
+
+            .sec-bar { flex-direction: column; align-items: flex-start; } /* Stack sec-bar items */
+            .search-wrap { width: 100%; } /* Make search input full width */
+            .search-input { min-width: unset; width: 100%; } /* Make search input full width */
+            .filter-row { width: 100%; justify-content: flex-start; } /* Adjust filter row */
+
+            /* Prevent “half visible” / horizontal overflow on phones */
+            body { overflow-x: hidden; }
+            .main-content { width: 100%; }
+            .content-wrap { width: 100%; }
+
+            /* Some blocks use inline grid styles; force them to stack on mobile */
+            .content-wrap > section > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+            [style*="grid-template-columns:1.6fr 1fr"],
+            [style*="grid-template-columns: 1.6fr 1fr"],
+            [style*="grid-template-columns:1.6fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* ══ LIGHT THEME ═══════════════════════════════════════════ */
+        [data-theme='light'] {
+            --bg-dark:       #dde1f0;
+            --bg-mid:        #cdd3e8;
+            --bg-card:       #bec6e0;
+            --bg-card2:      #c8d0e6;
+            --bg-card3:      #c2cade;
+            --text-main:     #0f172a;
+            --text-muted:    #334155;
+            --text-faint:    #475569;
+            --border:        rgba(15,23,42,0.10);
+            --border2:       rgba(15,23,42,0.14);
+        }
+        [data-theme='light'] body { background: var(--bg-dark); color: var(--text-main); }
+        [data-theme='light'] .sidebar { background: var(--bg-mid); border-right-color: var(--border); }
+        [data-theme='light'] .topbar  { background: var(--bg-mid); border-bottom-color: var(--border); }
+        [data-theme='light'] .stat-card { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .stat-val { color: #0f172a; }
+        [data-theme='light'] .card { background: var(--bg-card); border-color: var(--border); box-shadow: 0 4px 18px rgba(15,23,42,0.08); }
+        [data-theme='light'] .tbl-wrap { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] th { background: rgba(15,23,42,0.08); color: var(--text-faint); }
+        [data-theme='light'] td { border-top-color: var(--border); }
+        [data-theme='light'] tr:hover td { background: rgba(15,23,42,0.03); }
+        [data-theme='light'] .status-bar { background: var(--bg-card2); border-color: var(--border); }
+        [data-theme='light'] .admin-card { background: var(--bg-card2); border-color: var(--border); }
+        [data-theme='light'] .nav-item:hover { background: rgba(15,23,42,0.06); color: var(--text-main); }
+        [data-theme='light'] .qi-card { background: var(--bg-dark); border-color: var(--border); }
+        [data-theme='light'] .chat-list-panel { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .chat-win { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .chat-list-hdr { border-bottom-color: var(--border); }
+        [data-theme='light'] .chat-win-hdr { border-bottom-color: var(--border); }
+        [data-theme='light'] .chat-input-row { border-top-color: var(--border); }
+        [data-theme='light'] .chat-txt { background: var(--bg-dark); border-color: var(--border2); color: var(--text-main); }
+        [data-theme='light'] .from-user .msg-bubble { background: var(--bg-card2); border-color: var(--border2); }
+        [data-theme='light'] .modal-box { background: var(--bg-card); border-color: var(--border2); }
+        [data-theme='light'] .modal-body-txt { background: rgba(15,23,42,0.05); border-color: var(--border); }
+        [data-theme='light'] .search-input { background: var(--bg-card2); border-color: var(--border2); color: var(--text-main); }
+        [data-theme='light'] .filter-btn { border-color: var(--border2); color: var(--text-muted); }
+        [data-theme='light'] .filter-btn:hover { color: var(--text-main); }
+        [data-theme='light'] .sess-item:hover { background: rgba(15,23,42,0.04); }
+        [data-theme='light'] .clock-badge { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .notif-btn { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .admin-chip { background: var(--bg-card); border-color: var(--border); }
+        [data-theme='light'] .dash-toast { background: var(--bg-card2); border-color: var(--border2); color: var(--text-main); }
+        [data-theme='light'] .qr-btn { border-color: var(--border2); color: var(--text-muted); }
+        [data-theme='light'] .quick-replies-bar { border-top-color: var(--border); }
+        [data-theme='light'] #theme-toggle-admin { background: rgba(15,23,42,0.08); border-color: var(--border2); }
+        [data-theme='light'] #theme-toggle-admin:hover { background: rgba(250,204,21,0.15); } 
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; } /* Stack stats cards */
+            .stat-card { padding: 1rem; gap: 10px; } /* Adjust padding */
+            .stat-icon { width: 36px; height: 36px; font-size: 0.9rem; } /* Adjust icon size */
+            .stat-val { font-size: 1.6rem; } /* Adjust font size */
+            .stat-label { font-size: 0.65rem; } /* Adjust font size */
+            .stat-note { font-size: 0.6rem; } /* Adjust font size */
+            .chat-layout { min-height: unset; } /* Allow chat layout to shrink */
+            .chat-list-panel { height: 200px; } /* Adjust chat list height */
+            .chat-win { height: 300px; } /* Adjust chat window height */
+            .chat-list-hdr { padding: 0.8rem 1rem; } /* Adjust chat header padding */
+            .chat-list-hdr-title { font-size: 0.8rem; } /* Adjust font size */
+            .sess-item { padding: 0.6rem 0.8rem; } /* Adjust session item padding */
+            .si-av { width: 28px; height: 28px; font-size: 0.6rem; } /* Adjust avatar size */
+            .si-name { font-size: 0.8rem; } /* Adjust font size */
+            .si-email { font-size: 0.65rem; } /* Adjust font size */
+            .unread-badge { font-size: 0.55rem; padding: 1px 5px; } /* Adjust badge size */
+            .msg-wrap { max-width: 90%; } /* Allow messages to take more width */
+            .msg-bubble { padding: 10px 14px; font-size: 0.8rem; } /* Adjust bubble padding/font */
+            .chat-input-row { padding: 0.6rem 0.8rem; } /* Adjust chat input padding */
+            .chat-txt { padding: 7px 12px; font-size: 0.8rem; } /* Adjust chat input */
+            .chat-send { width: 32px; height: 32px; font-size: 0.75rem; } /* Adjust send button */
+            .quick-replies-bar { padding: 0.4rem 0.8rem 0; } /* Adjust quick replies padding */
+            .qr-btn { padding: 2px 8px; font-size: 0.65rem; } /* Adjust quick reply button */
+            .modal-box { padding: 1.5rem; max-width: 95%; } /* Adjust modal padding */
+            .modal-title { font-size: 0.9rem; margin-bottom: 1rem; } /* Adjust modal title */
+            .modal-field label { font-size: 0.6rem; } /* Adjust modal label */
+            .modal-val { font-size: 0.8rem; } /* Adjust modal value */
+            .modal-body-txt { font-size: 0.8rem; padding: 0.7rem; } /* Adjust modal text area */
+            .btn { padding: 4px 10px; font-size: 0.7rem; } /* Adjust general button size */
+            .sec-title { font-size: 0.85rem; } /* Adjust section title font size */
+            .qi-card { padding: 8px 10px; } /* Adjust qi-card padding */
+            .qi-label { font-size: 0.7rem; } /* Adjust qi-label font size */
+            .qi-val { font-size: 0.9rem; } /* Adjust qi-val font size */
+        }
+
+        /* Added a very small screen breakpoint for further refinement */
+        @media (max-width: 375px) {
+            .topbar { padding: 0 0.5rem; }
+            .page-title { font-size: 0.75rem; }
+            .page-sub { font-size: 0.58rem; }
+            .clock-badge { display: none; } /* Hide clock badge on very small screens */
+            .admin-chip { display: none; } /* Hide admin chip on very small screens */
+            .notif-btn { margin-left: auto; } /* Push notification button to the right */
+
+            .content-wrap { padding: 1rem 0.5rem; }
+            .stat-card { padding: 0.8rem; gap: 8px; }
+            .stat-icon { width: 32px; height: 32px; font-size: 0.8rem; }
+            .stat-val { font-size: 1.4rem; }
+            .stat-label { font-size: 0.6rem; }
+            .stat-note { font-size: 0.55rem; }
+
+            .sec-title { font-size: 0.8rem; }
+            .tbl-wrap { border-radius: 8px; }
+            th, td { padding: 0.6rem 0.8rem; font-size: 0.75rem; }
+            .td-s { font-size: 0.65rem; }
+            .av-init { width: 28px; height: 28px; font-size: 0.6rem; }
+            .td-user { gap: 8px; }
+            .badge { padding: 2px 7px; font-size: 0.6rem; }
+            .btn { padding: 3px 8px; font-size: 0.65rem; }
+
+            .chat-list-panel { height: 180px; }
+            .chat-win { height: 250px; }
+            .chat-list-hdr { padding: 0.6rem 0.8rem; }
+            .chat-list-hdr-title { font-size: 0.75rem; }
+            .sess-item { padding: 0.5rem 0.6rem; }
+            .si-av { width: 24px; height: 24px; font-size: 0.55rem; }
+            .si-name { font-size: 0.75rem; }
+            .si-email { font-size: 0.6rem; }
+            .msg-bubble { padding: 8px 12px; font-size: 0.75rem; }
+            .chat-input-row { padding: 0.5rem 0.6rem; }
+            .chat-txt { padding: 6px 10px; font-size: 0.75rem; }
+            .chat-send { width: 28px; height: 28px; font-size: 0.7rem; }
+            .qr-btn { padding: 1px 6px; font-size: 0.6rem; }
+
+            .modal-box { padding: 1rem; border-radius: 16px; }
+            .modal-title { font-size: 0.85rem; margin-bottom: 0.8rem; }
+            .modal-field label { font-size: 0.55rem; }
+            .modal-val { font-size: 0.75rem; }
+            .modal-body-txt { font-size: 0.75rem; padding: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════ SIDEBAR OVERLAY (mobile) ════ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div>
+            <div class="logo-text">Nexlify</div>
+            <span class="logo-sub">Admin Portal</span>
+        </div>
+    </div>
+
+    <p class="sec-label">Main</p>
+    <ul class="nav-links">
+        <li class="nav-item active" onclick="switchSection('overview',this)">
+            <i class="fas fa-chart-pie"></i> Overview
+        </li>
+        <li class="nav-item" onclick="switchSection('applications',this)">
+            <i class="fas fa-file-signature"></i> Applications
+            <span class="nav-badge nb-yellow" id="badge-apps"></span>
+        </li>
+        <li class="nav-item" onclick="switchSection('students',this)">
+            <i class="fas fa-user-graduate"></i> Students
+            <span class="nav-badge nb-blue" id="badge-students"></span>
+        </li>
+        <li class="nav-item" onclick="switchSection('tasks',this)">
+            <i class="fas fa-tasks"></i> Tasks
+            <span class="nav-badge nb-purple" id="badge-tasks"></span>
+        </li>
+        <li class="nav-item" onclick="switchSection('interviews',this)">
+            <i class="fas fa-clipboard-list"></i> Interviews
+            <span class="nav-badge nb-green" id="badge-interviews"></span>
+        </li>
+        <li class="nav-item" onclick="switchSection('messages',this)">
+            <i class="fas fa-envelope"></i> Messages
+            <span class="nav-badge nb-green" id="badge-msgs"></span>
+        </li>
+    </ul>
+
+    <p class="sec-label">Support</p>
+    <ul class="nav-links">
+        <li class="nav-item" onclick="switchSection('support',this)">
+            <i class="fas fa-headset"></i> Live Chat
+            <span class="nav-badge nb-red" id="badge-chats"></span>
+        </li>
+    </ul>
+
+    <div class="sidebar-bottom">
+        <div class="admin-card">
+            <div class="admin-av"><i class="fas fa-user-shield"></i></div>
+            <div style="min-width:0;">
+                <div class="aname" id="admin-name-side">Admin</div>
+                <div class="arole">Super Administrator</div>
+            </div>
+        </div>
+        <div style="padding: 0 0.25rem 0.5rem;">
+            <div class="conn-status" id="conn-status">
+                <span class="conn-dot" id="conn-dot"></span>
+                <span id="conn-label">Connecting…</span>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</nav>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<div class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+            <button class="back-btn" onclick="window.location.href='home.html'" title="Go back to site" aria-label="Go back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+
+        <button class="hamburger-btn" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="page-breadcrumb">
+            <div class="page-title" id="section-title">Dashboard Overview</div>
+            <div class="page-sub" id="section-sub">Welcome back! Here's what's happening at Nexlify.</div>
+        </div>
+        <div class="topbar-right">
+            <div class="clock-badge"><i class="fas fa-clock"></i><span id="clock"></span></div>
+            <button id="theme-toggle-admin" onclick="toggleAdminTheme()" title="Toggle Dark/Light Mode" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#facc15;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.3s;flex-shrink:0;"></button>
+            <div class="notif-btn" title="Notifications"><i class="fas fa-bell"></i><span class="notif-dot" id="notif-dot"></span></div>
+            <div class="admin-chip">
+                <div class="admin-chip-av"><i class="fas fa-user-shield"></i></div>
+                <div class="admin-chip-name" id="admin-name-hdr">Admin</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content-wrap">
+
+        <!-- ══ OVERVIEW ══════════════════════════════════════════ -->
+        <section id="overview" class="content-section active">
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon si-y"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-val" id="stat-students">—</div>
+                        <div class="stat-note">Registered accounts</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-b"><i class="fas fa-file-signature"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Applications</div>
+                        <div class="stat-val" id="stat-apps">—</div>
+                        <div class="stat-note"><b id="stat-pending-lbl">0</b> pending review</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-p"><i class="fas fa-book-open"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Enrollments</div>
+                        <div class="stat-val" id="stat-enroll">—</div>
+                        <div class="stat-note">Active course enrollments</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-g"><i class="fas fa-star"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Avg Interview Score</div>
+                        <div class="stat-val" id="stat-interview-avg">—</div>
+                        <div class="stat-note">Based on saved mock interviews</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-r"><i class="fas fa-tasks"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Tasks Pending</div>
+                        <div class="stat-val" id="stat-tasks">—</div>
+                        <div class="stat-note">Pending review assignments</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-g"><i class="fas fa-envelope-open-text"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Messages</div>
+                        <div class="stat-val" id="stat-messages">—</div>
+                        <div class="stat-note">From contact form</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-p"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Interviews</div>
+                        <div class="stat-val" id="stat-interviews">—</div>
+                        <div class="stat-note">Mock interviews completed</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon si-r"><i class="fas fa-headset"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">Active Chats</div>
+                        <div class="stat-val" id="stat-chats">—</div>
+                        <div class="stat-note">Live support sessions</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Overview Grid -->
+            <div class="ov-grid">
+                <!-- Course Distribution -->
+                <div class="card">
+                    <div class="sec-title" style="margin-bottom:1rem;"><i class="fas fa-chart-bar"></i> Course Enrolment Distribution</div>
+                    <div id="course-dist"><div class="empty"><i class="fas fa-spinner fa-spin"></i></div></div>
+                </div>
+                <!-- Application Summary -->
+                <div class="card">
+                    <div class="sec-title" style="margin-bottom:1rem;"><i class="fas fa-clipboard-list"></i> Application Summary</div>
+                    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                        <div class="qi-card"><span class="qi-label"><i class="fas fa-book-open" style="color:var(--purple);"></i>Enrollments</span><span class="qi-val" id="qi-enroll" style="color:var(--purple);">—</span></div>
+                        <div class="qi-card"><span class="qi-label"><i class="fas fa-comments" style="color:var(--info);"></i>Chat Sessions</span><span class="qi-val" id="qi-chats" style="color:var(--info);">—</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applications + Activity side by side -->
+            <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem;">
+                <div>
+                    <div class="sec-bar">
+                        <div class="sec-title"><i class="fas fa-clock"></i> Recent Applications & Enrollments</div>
+                        <button class="btn btn-outline" onclick="switchToSection('applications')"><i class="fas fa-arrow-right"></i> View All</button>
+                    </div>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Student</th><th>Course</th><th>Applied</th></tr></thead>
+                            <tbody id="ov-recent-body">
+                                <tr><td colspan="3" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="sec-bar">
+                        <div class="sec-title"><i class="fas fa-bolt"></i> Recent Activity</div>
+                        <button class="btn btn-outline" onclick="fetchStats()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="card" style="padding:0.75rem 1rem;">
+                        <div class="activity-feed" id="activity-feed">
+                            <div class="empty" style="padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ APPLICATIONS ══════════════════════════════════════ -->
+        <section id="applications" class="content-section">
+            <div class="sec-bar">
+                <div class="sec-title"><i class="fas fa-file-signature"></i> Course Applications &amp; Enrollments</div>
+                <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                    <div class="search-wrap">
+                        <label class="sr-only" for="app-search">Search applications</label>
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" id="app-search" placeholder="Search name, email, course…" oninput="renderApps()">
+                    </div>
+                    <div class="filter-row">
+                        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>Course</th><th>Type</th><th>Applied Date</th></tr></thead>
+                    <tbody id="apps-table-body">
+                        <tr><td colspan="4" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading applications…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ══ STUDENTS ══════════════════════════════════════════ -->
+        <section id="students" class="content-section">
+            <div class="sec-bar">
+                <div class="sec-title"><i class="fas fa-user-graduate"></i> Registered Students</div>
+                <div class="search-wrap">
+                    <label class="sr-only" for="stu-search">Search students</label>
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" id="stu-search" placeholder="Search name or email…" oninput="renderStudents()">
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>Phone</th><th>Enrolled Courses</th><th>Enrollment Count</th><th>Joined</th></tr></thead>
+                    <tbody id="students-table-body">
+                        <tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading students…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="tasks" class="content-section">
+            <div class="sec-bar" style="align-items:flex-start;gap:0.75rem;flex-wrap:wrap;">
+                <div>
+                    <div class="sec-title"><i class="fas fa-tasks"></i> Interview Tasks & Reviews</div>
+                    <div style="color:#94a3b8;font-size:0.95rem;margin-top:0.45rem;">Create mock interview tasks, review student submissions, and track task feedback.</div>
+                </div>
+                <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
+                    <button class="btn btn-outline" onclick="fetchTasks()"><i class="fas fa-sync-alt"></i> Refresh Tasks</button>
+                    <button class="btn-primary" onclick="createTask()"><i class="fas fa-plus"></i> Create Task</button>
+                </div>
+            </div>
+            <div class="tbl-wrap" style="margin-bottom:1.2rem;">
+                <table>
+                    <thead><tr><th>Task</th><th>Course</th><th>Due Date</th><th>Submissions</th><th>Pending</th></tr></thead>
+                    <tbody id="tasks-table-body">
+                        <tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading tasks…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>Task</th><th>Status</th><th>Score</th><th>File</th><th>Submitted</th><th>Action</th></tr></thead>
+                    <tbody id="task-submissions-table-body">
+                        <tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading task reviews…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="interviews" class="content-section">
+            <div class="sec-bar">
+                <div class="sec-title"><i class="fas fa-clipboard-check"></i> Mock Interview Results</div>
+                <div class="search-wrap">
+                    <label class="sr-only" for="interview-search">Search interviews</label>
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" id="interview-search" placeholder="Search student or topic…" oninput="renderInterviews()">
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>Course</th><th>Score</th><th>Submitted</th><th>Feedback</th><th>Action</th></tr></thead>
+                    <tbody id="interviews-table-body">
+                        <tr><td colspan="6" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading interview results…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card" id="interview-detail-card" style="margin-top:1rem;display:none;">
+                <div class="sec-title"><i class="fas fa-file-alt"></i> Interview Report Detail</div>
+                <div id="interview-detail-body" style="padding:1rem;color:var(--text);line-height:1.6;">Select a result to see the full report details.</div>
+            </div>
+        </section>
+
+        <!-- ══ MESSAGES ══════════════════════════════════════════ -->
+        <section id="messages" class="content-section">
+            <div class="sec-bar">
+                <div class="sec-title"><i class="fas fa-envelope"></i> Contact Messages</div>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <div class="search-wrap">
+                        <label class="sr-only" for="msg-search">Search messages</label>
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" id="msg-search" placeholder="Search messages…" oninput="renderMsgs()">
+                    </div>
+                    <button class="btn btn-outline" onclick="fetchMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>From</th><th>Subject</th><th>Message Preview</th><th>Received</th><th>Action</th></tr></thead>
+                    <tbody id="messages-table-body">
+                        <tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading messages…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ══ LIVE CHAT ══════════════════════════════════════════ -->
+        <section id="support" class="content-section">
+            <div class="sec-bar">
+                <div class="sec-title"><i class="fas fa-headset"></i> Live Support Chat</div>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                    <button class="btn btn-outline" onclick="fetchChatSessions()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+            </div>
+            <div class="chat-layout">
+                <!-- Session List -->
+                <div class="chat-list-panel">
+                    <div class="chat-list-hdr">
+                        <span class="chat-list-hdr-title"><i class="fas fa-circle"></i>Active Sessions</span>
+                        <span class="sess-count" id="sessions-count">0 sessions</span>
+                    </div>
+                    <div class="chat-sess-list" id="chat-sessions-list">
+                        <div class="empty"><i class="fas fa-comments"></i><p>No active sessions</p></div>
+                    </div>
+                </div>
+                <!-- Chat Window -->
+                <div class="chat-win">
+                    <div class="chat-win-hdr">
+                        <div class="cw-av" id="chat-win-av"><i class="fas fa-comments"></i></div>
+                        <div>
+                            <div class="cw-name" id="chat-win-name">Select a conversation</div>
+                            <div class="cw-email" id="chat-win-email">Choose from the left panel to start chatting</div>
+                        </div>
+                        <div class="online-dot" id="online-dot" style="display:none;"></div>
+                    </div>
+                    <!-- Quick replies -->
+                    <div class="quick-replies-bar" id="quick-replies-bar" style="display:none;">
+                        <span style="font-size:0.68rem;color:var(--text-faint);align-self:center;">Quick:</span>
+                        <button class="qr-btn" onclick="sendQuickReply('Hello! How can I help you today?')">Hello 👋</button>
+                        <button class="qr-btn" onclick="sendQuickReply('Please give me a moment, I will look into this.')">One moment</button>
+                        <button class="qr-btn" onclick="sendQuickReply('Your application has been received. We will get back to you shortly.')">Application received</button>
+                        <button class="qr-btn" onclick="sendQuickReply('Thank you for reaching out! Is there anything else I can help you with?')">Thank you</button>
+                    </div>
+                    <div class="chat-msgs" id="chat-box">
+                        <div class="chat-empty">
+                            <i class="fas fa-comments"></i>
+                            <p>Select a conversation to begin chatting</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-row">
+                        <label class="sr-only" for="chat-input">Send chat reply</label>
+                        <input type="text" id="chat-input" class="chat-txt" placeholder="Type your reply… (Enter to send)" disabled>
+                        <button class="chat-send" id="chat-send-btn" onclick="sendChatMessage()" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /content-wrap -->
+</div><!-- /main-content -->
+
+<!-- Message Viewer Modal -->
+<div class="modal-overlay" id="msg-modal" onclick="if(event.target===this)closeMsgModal()">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeMsgModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title"><i class="fas fa-envelope-open-text"></i> Message Details</div>
+        <div class="modal-field"><label>From</label><div class="modal-val" id="mm-from">—</div></div>
+        <div class="modal-field"><label>Subject</label><div class="modal-val" id="mm-subject">—</div></div>
+        <div class="modal-field"><label>Received</label><div class="modal-val td-m" id="mm-date">—</div></div>
+        <div class="modal-field"><label>Message</label><div class="modal-body-txt" id="mm-body"></div></div>
+    </div>
+</div>
+
+<!-- Create Task Modal -->
+<div class="modal-overlay" id="task-modal" onclick="if(event.target===this)closeTaskModal()">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeTaskModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title"><i class="fas fa-tasks"></i> Assign Task to Course</div>
+        <div class="modal-field">
+            <label for="task-title">Task Title</label>
+            <input id="task-title" type="text" class="modal-val" placeholder="e.g. Build a component test case" />
+        </div>
+        <div class="modal-field">
+            <label for="task-course">Course</label>
+            <select id="task-course" class="modal-val">
+                <option value="Web Development">Web Development</option>
+                <option value="Data Science">Data Science</option>
+                <option value="Machine Learning">Machine Learning</option>
+                <option value="Mobile Development">Mobile Development</option>
+                <option value="Cyber Security">Cyber Security</option>
+                <option value="Cloud Computing">Cloud Computing</option>
+                <option value="General">General</option>
+            </select>
+        </div>
+        <div class="modal-field">
+            <label for="task-due-date">Due Date</label>
+            <input id="task-due-date" type="date" class="modal-val" />
+        </div>
+        <div class="modal-field">
+            <label for="task-description">Description</label>
+            <textarea id="task-description" class="modal-val" rows="5" placeholder="Describe the task requirements and expected submission format."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="closeTaskModal()">Cancel</button>
+            <button class="btn-primary" onclick="submitTaskForm()">Create Task</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="dash-toast" id="dash-toast"></div>
+
+<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+<script>
+const API = (window.location.protocol || '').startsWith('http') ? window.location.origin : 'http://localhost:8080';
+if ((window.location.protocol || '').startsWith('file')) {
+    console.warn('Admin dashboard loaded from file://, falling back to localhost API base:', API);
+}
+const socket = io(API);
+
+/* ── Auth ──────────────────────────────────────────────────────── */
+const token    = sessionStorage.getItem('token')    || localStorage.getItem('nexlify_token');
+const userRole = sessionStorage.getItem('userRole') || (JSON.parse(localStorage.getItem('nexlify_user') || '{}').role);
+const adminName= sessionStorage.getItem('userName') || (JSON.parse(localStorage.getItem('nexlify_user') || '{}').name);
+
+if (!token || userRole !== 'admin') window.location.href = 'login.html';
+
+document.getElementById('admin-name-side').textContent = adminName || 'Admin';
+document.getElementById('admin-name-hdr').textContent  = adminName || 'Admin';
+
+/* ── Socket: reliable admin_join on every (re)connect ─────────── */
+socket.on('connect', () => {
+    socket.emit('admin_join');
+    document.getElementById('conn-dot').className   = 'conn-dot online';
+    document.getElementById('conn-label').textContent = 'Live • Connected';
+});
+
+socket.on('disconnect', () => {
+    document.getElementById('conn-dot').className   = 'conn-dot';
+    document.getElementById('conn-label').textContent = 'Disconnected';
+});
+
+socket.on('reconnect', () => {
+    socket.emit('admin_join');
+});
+
+/* ── Clock ─────────────────────────────────────────────────────── */
+function tickClock() {
+    document.getElementById('clock').textContent = new Date().toLocaleString('en-US', {
+        weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
+    });
+}
+tickClock(); setInterval(tickClock, 30000);
+
+/* ── State ─────────────────────────────────────────────────────── */
+let currentSessionId = null;
+let allApps     = [];
+let allMsgs     = [];
+let allStudents = [];
+let allInterviews = [];
+let appFilter   = 'all';
+let unreadMsgCount = 0;
+
+/* ── Section routing ───────────────────────────────────────────── */
+const sectionMeta = {
+    overview:     { title: 'Dashboard Overview',       sub: "Welcome back! Here's what's happening at Nexlify." },
+    applications: { title: 'Course Applications',      sub: 'Review and manage all student course applications and enrollments.' },
+    students:     { title: 'Student Directory',        sub: 'All registered students and their enrollment details.' },
+    interviews:   { title: 'Mock Interview Results',   sub: 'Review student AI mock interview scores and feedback.' },
+    tasks:        { title: 'Interview Tasks',          sub: 'Assign mock interview tasks and review student submissions.' },
+    messages:     { title: 'Contact Messages',         sub: 'Messages submitted via the contact form.' },
+    support:      { title: 'Live Support Chat',        sub: 'Real-time chat with students seeking help.' }
+};
+
+function switchSection(id, el) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (el) el.classList.add('active');
+    const m = sectionMeta[id] || {};
+    document.getElementById('section-title').textContent = m.title || id;
+    document.getElementById('section-sub').textContent   = m.sub   || '';
+    if (id === 'overview')     fetchStats();
+    if (id === 'applications') fetchApplications();
+    if (id === 'students')     fetchStudents();
+    if (id === 'interviews')   fetchInterviews();
+    if (id === 'tasks')        fetchTasks();
+    if (id === 'messages')     fetchMessages();
+    if (id === 'support')      fetchChatSessions();
+    closeSidebar();
+}
+
+function switchToSection(id) {
+    const el = document.querySelector(`.nav-item[onclick*="'${id}'"]`);
+    switchSection(id, el);
+}
+
+/* ── Mobile sidebar ────────────────────────────────────────────── */
+function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('show');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+/* ── Init ──────────────────────────────────────────────────────── */
+fetchStats();
+setInterval(fetchStats, 120000);
+
+/* ── Toast ─────────────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg, type = 'info') {
+    const t = document.getElementById('dash-toast');
+    t.textContent = msg;
+    t.className = `dash-toast t-${type} show`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+/* ── Badge helpers ─────────────────────────────────────────────── */
+function setBadge(id, count) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (count > 0) { el.textContent = count > 99 ? '99+' : count; el.style.display = ''; }
+    else el.style.display = 'none';
+}
+function updateTitle() {
+    const total = unreadMsgCount;
+    document.title = total > 0 ? `(${total}) Admin Dashboard | Nexlify` : 'Admin Dashboard | Nexlify';
+}
+
+/* ── Stats ─────────────────────────────────────────────────────── */
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const d = await res.json();
+
+        animateCount('stat-students', d.totalStudents     ?? 0);
+        animateCount('stat-apps',     d.courseApps        ?? 0);
+        animateCount('stat-enroll',   d.totalEnrollments  ?? 0);
+        animateCount('stat-interview-avg', Math.round(d.averageInterviewScore ?? 0));
+        animateCount('stat-messages', d.messages          ?? 0);
+        animateCount('stat-chats',    d.activeChats       ?? 0);
+        animateCount('stat-tasks',    d.pendingTaskReviews ?? 0);
+
+        document.getElementById('stat-pending-lbl').textContent = d.pendingCourseApps ?? 0;
+        document.getElementById('qi-enroll').textContent  = d.totalEnrollments   ?? 0;
+        document.getElementById('qi-chats').textContent   = d.activeChats        ?? 0;
+        document.getElementById('stat-interviews').textContent = d.interviewsConducted ?? 0;
+
+        setBadge('badge-apps',  d.pendingCourseApps ?? 0);
+        setBadge('badge-msgs',  d.messages          ?? 0);
+        setBadge('badge-chats', d.activeChats       ?? 0);
+        setBadge('badge-students', d.totalStudents  ?? 0);
+        setBadge('badge-interviews', d.interviewsConducted ?? 0);
+        setBadge('badge-tasks', d.pendingTaskReviews ?? 0);
+
+        unreadMsgCount = (d.pendingCourseApps ?? 0) + (d.activeChats ?? 0);
+        updateTitle();
+        const notifDot = document.getElementById('notif-dot');
+        if (unreadMsgCount > 0) notifDot.classList.add('show');
+        else notifDot.classList.remove('show');
+
+        // Course distribution
+        const distEl = document.getElementById('course-dist');
+        if (d.courseDistribution && d.courseDistribution.length > 0) {
+            const max = Math.max(...d.courseDistribution.map(c => c.count), 1);
+            distEl.innerHTML = d.courseDistribution.map(c => `
+                <div class="c-row">
+                    <div class="c-row-top">
+                        <span style="font-weight:500;font-size:0.82rem;">${escHtml(c.course)}</span>
+                        <span style="font-weight:800;color:var(--accent);font-size:0.82rem;">${c.count} <span style="color:var(--text-faint);font-weight:400;font-size:0.68rem;">(${Math.round((c.count/max)*100)}%)</span></span>
+                    </div>
+                    <div class="c-bar"><div class="c-fill" data-w="${Math.round((c.count/max)*100)}"></div></div>
+                </div>`).join('');
+            // Animate bars
+            setTimeout(() => {
+                document.querySelectorAll('.c-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
+            }, 100);
+        } else {
+            distEl.innerHTML = '<div class="empty"><i class="fas fa-chart-bar"></i><p>No enrolment data yet</p></div>';
+        }
+
+        fetchRecentApplications();
+    } catch (err) {
+        console.error('Stats error:', err);
+    }
+}
+
+function animateCount(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const start = parseInt(el.textContent) || 0;
+    const diff  = target - start;
+    if (diff === 0) { el.textContent = target; return; }
+    let step = 0; const steps = 20;
+    const timer = setInterval(() => {
+        step++;
+        el.textContent = Math.round(start + (diff * (step / steps)));
+        if (step >= steps) { el.textContent = target; clearInterval(timer); }
+    }, 25);
+}
+
+/* ── Activity Feed ─────────────────────────────────────────────── */
+function buildActivityFeed(apps, msgs) {
+    const items = [];
+    (apps || []).slice(0, 4).forEach(a => {
+        items.push({
+            icon: a.src === 'enrollment' ? 'fa-book-open' : 'fa-file-signature',
+            cls: a.src === 'enrollment' ? 'act-p' : 'act-b',
+            text: `<strong>${escHtml(a.full_name)}</strong> ${a.src === 'enrollment' ? 'enrolled in' : 'applied for'} <span style="color:var(--accent);">${escHtml(a.course_name)}</span>`,
+            time: new Date(a.applied_at)
+        });
+    });
+    (msgs || []).slice(0, 3).forEach(m => {
+        items.push({
+            icon: 'fa-envelope',
+            cls: 'act-g',
+            text: `<strong>${escHtml(m.full_name)}</strong> sent a contact message`,
+            time: new Date(m.received_at)
+        });
+    });
+    items.sort((a, b) => b.time - a.time);
+
+    const feed = document.getElementById('activity-feed');
+    if (items.length === 0) {
+        feed.innerHTML = '<div class="empty" style="padding:1rem;"><i class="fas fa-history"></i><p>No recent activity</p></div>';
+        return;
+    }
+    feed.innerHTML = items.slice(0, 7).map(item => {
+        const cls = item.icon === 'fa-file-signature' ? 'act-b' : item.icon === 'fa-envelope' ? 'act-g' : 'act-y';
+        return `
+        <div class="act-item">
+            <div class="act-dot ${cls}"><i class="fas ${item.icon}"></i></div>
+            <div class="act-body">
+                <div class="act-text">${item.text}</div>
+                <div class="act-time">${timeSince(item.time)}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+/* ── Recent Apps (Overview) ────────────────────────────────────── */
+async function fetchRecentApplications() {
+    const body = document.getElementById('ov-recent-body');
+    try {
+        const res  = await fetch(`${API}/api/admin/course-applications`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+            body.innerHTML = '<tr><td colspan="4"><div class="empty"><i class="fas fa-folder-open"></i><p>No applications yet</p></div></td></tr>';
+            buildActivityFeed([], []);
+            return;
+        }
+        body.innerHTML = data.slice(0, 7).map(a => `
+            <tr>
+                <td>
+                    <div class="td-user">
+                        <div class="av-init">${escHtml((a.full_name||'?').slice(0,2).toUpperCase())}</div>
+                        <div>
+                            <strong>${escHtml(a.full_name)}</strong>
+                            <div class="td-s">${escHtml(a.email)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="td-m" style="font-size:0.8rem;">${escHtml(a.course_name)}</td>
+                <td class="td-m">${new Date(a.applied_at).toLocaleDateString()}</td>
+            </tr>`).join('');
+
+        // Fetch messages for activity feed
+        try {
+            const mRes = await fetch(`${API}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const mData = mRes.ok ? await mRes.json() : [];
+            buildActivityFeed(data, Array.isArray(mData) ? mData : []);
+        } catch { buildActivityFeed(data, []); }
+
+    } catch (err) {
+        body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--error);">Failed to load applications</td></tr>';
+    }
+}
+
+/* ── Applications ──────────────────────────────────────────────── */
+async function fetchApplications() {
+    const body = document.getElementById('apps-table-body');
+    body.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading applications…</td></tr>';
+    try {
+        const res = await fetch(`${API}/api/admin/course-applications`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        allApps = await res.json();
+        if (!Array.isArray(allApps)) allApps = [];
+        renderApps();
+    } catch (err) {
+        console.error('Applications error:', err);
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--error);"><i class="fas fa-exclamation-circle"></i> Failed to load. Check server connection.</td></tr>';
+    }
+}
+
+function renderApps() {
+    const body   = document.getElementById('apps-table-body');
+    const search = (document.getElementById('app-search')?.value || '').toLowerCase();
+    const filtered = allApps.filter(a =>
+        true &&
+        (!search || (a.full_name||'').toLowerCase().includes(search) || (a.email||'').toLowerCase().includes(search) || (a.course_name||'').toLowerCase().includes(search))
+    );
+
+    // Update status bar counts
+    const enrolls  = allApps.filter(a => a.src === 'enrollment').length;
+    const appCount = allApps.filter(a => a.src === 'application').length;
+
+    if (filtered.length === 0) {
+        body.innerHTML = '<tr><td colspan="4"><div class="empty"><i class="fas fa-folder-open"></i><p>No applications found</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = filtered.map(app => `
+        <tr>
+            <td>
+                <div class="td-user">
+                    <div class="av-init">${escHtml((app.full_name||'?').slice(0,2).toUpperCase())}</div>
+                    <div>
+                        <strong>${escHtml(app.full_name)}</strong>
+                        <div class="td-s">${escHtml(app.email)}</div>
+                        ${app.phone ? `<div class="td-s"><i class="fas fa-phone" style="font-size:0.58rem;margin-right:3px;"></i>${escHtml(app.phone)}</div>` : ''}
+                    </div>
+                </div>
+            </td>
+            <td style="font-weight:600;font-size:0.82rem;">${escHtml(app.course_name)}</td>
+            <td><span class="badge ${app.src === 'enrollment' ? 'b-enroll' : 'b-active'}">${app.src === 'enrollment' ? 'Enrolled' : 'Applied'}</span></td>
+            <td class="td-m">${new Date(app.applied_at).toLocaleDateString()}</td>
+        </tr>`).join('');
+}
+
+function setFilter(f, btn) {
+    appFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderApps();
+}
+
+async function updateAppStatus(id, status) {
+    try {
+        const res = await fetch(`${API}/api/admin/course-applications/${id}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        if (!res.ok) throw new Error(res.status);
+        const app = allApps.find(a => a.id === id);
+        if (app) app.status = status;
+        renderApps();
+        fetchStats();
+        showToast(`Application ${status === 'approved' ? '✅ Approved' : '❌ Rejected'} successfully`, status === 'approved' ? 'success' : 'error');
+    } catch (err) {
+        console.error('Update status error:', err);
+        showToast('Failed to update application status', 'error');
+    }
+}
+
+/* ── Students ──────────────────────────────────────────────────── */
+async function fetchStudents() {
+    const body = document.getElementById('students-table-body');
+    body.innerHTML = '<tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading students…</td></tr>';
+    try {
+        const res = await fetch(`${API}/api/admin/students`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        allStudents = await res.json();
+        if (!Array.isArray(allStudents)) allStudents = [];
+        renderStudents();
+    } catch (err) {
+        console.error('Students error:', err);
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--error);"><i class="fas fa-exclamation-circle"></i> Failed to load students</td></tr>';
+    }
+}
+
+function renderStudents() {
+    const body   = document.getElementById('students-table-body');
+    const search = (document.getElementById('stu-search')?.value || '').toLowerCase();
+    const filtered = allStudents.filter(s =>
+        !search || (s.name||'').toLowerCase().includes(search) || (s.email||'').toLowerCase().includes(search)
+    );
+    if (filtered.length === 0) {
+        body.innerHTML = '<tr><td colspan="5"><div class="empty"><i class="fas fa-user-graduate"></i><p>No students found</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = filtered.map(s => `
+        <tr>
+            <td>
+                <div class="td-user">
+                    <div class="av-init">${escHtml((s.name||'?').slice(0,2).toUpperCase())}</div>
+                    <div>
+                        <strong>${escHtml(s.name)}</strong>
+                        <div class="td-s">${escHtml(s.email)}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="td-m">${escHtml(s.phone || '—')}</td>
+            <td style="font-size:0.78rem;max-width:220px;color:var(--text-muted);">${s.courses ? escHtml(s.courses) : '<em style="opacity:0.5;">Not enrolled</em>'}</td>
+            <td>
+                <span class="badge ${s.enrollment_count > 0 ? 'b-approved' : 'b-pending'}">${s.enrollment_count} course${s.enrollment_count !== 1 ? 's' : ''}</span>
+            </td>
+            <td class="td-m">${new Date(s.created_at).toLocaleDateString()}</td>
+        </tr>`).join('');
+}
+
+/* ── Messages ──────────────────────────────────────────────────── */
+async function fetchInterviews() {
+    const body = document.getElementById('interviews-table-body');
+    body.innerHTML = '<tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading interview results…</td></tr>';
+    try {
+        const res = await fetch(`${API}/api/admin/interview-results`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        allInterviews = Array.isArray(data) ? data : [];
+        renderInterviews(allInterviews);
+    } catch (err) {
+        console.error('Interview results error:', err);
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--error);"><i class="fas fa-exclamation-circle"></i> Failed to load interview results.</td></tr>';
+    }
+}
+
+function renderInterviews(results) {
+    const body   = document.getElementById('interviews-table-body');
+    const list   = Array.isArray(results) ? results : allInterviews;
+    const search = (document.getElementById('interview-search')?.value || '').toLowerCase();
+    const filtered = (list || []).filter(r =>
+        !search ||
+        (r.student_name||'').toLowerCase().includes(search) ||
+        (r.email||'').toLowerCase().includes(search) ||
+        (r.course||'').toLowerCase().includes(search) ||
+        (r.feedback||'').toLowerCase().includes(search)
+    );
+    if (filtered.length === 0) {
+        body.innerHTML = '<tr><td colspan="5"><div class="empty"><i class="fas fa-clipboard-list"></i><p>No interview results found</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = filtered.map(item => `
+        <tr>
+            <td>
+                <div class="td-user">
+                    <div class="av-init">${escHtml((item.student_name||'?').slice(0,2).toUpperCase())}</div>
+                    <div>
+                        <strong>${escHtml(item.student_name)}</strong>
+                        <div class="td-s">${escHtml(item.email)}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="td-m">${escHtml(item.course)}</td>
+            <td><strong>${escHtml(String(item.score))}%</strong></td>
+            <td class="td-m">${new Date(item.created_at).toLocaleString()}</td>
+            <td class="td-m" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(item.feedback || 'No feedback')}</td>
+            <td class="td-m"><button class="btn btn-outline" onclick="fetchInterviewDetail(${item.id})">View</button></td>
+        </tr>`).join('');
+}
+
+async function fetchTasks() {
+    const taskBody = document.getElementById('tasks-table-body');
+    const submissionsBody = document.getElementById('task-submissions-table-body');
+    if (taskBody) taskBody.innerHTML = '<tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading tasks…</td></tr>';
+    if (submissionsBody) submissionsBody.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading task reviews…</td></tr>';
+    try {
+        const [taskRes, submissionRes] = await Promise.all([
+            fetch(`${API}/api/admin/tasks`, { headers: { 'Authorization': `Bearer ${token}` } }),
+            fetch(`${API}/api/admin/task-submissions`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        if (!taskRes.ok) throw new Error('Failed to load tasks');
+        if (!submissionRes.ok) throw new Error('Failed to load submissions');
+        const taskData = await taskRes.json();
+        const submissionData = await submissionRes.json();
+        renderTasks(Array.isArray(taskData) ? taskData : []);
+        renderTaskSubmissions(Array.isArray(submissionData) ? submissionData : []);
+    } catch (err) {
+        console.error('Tasks error:', err);
+        if (taskBody) taskBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--error);">Failed to load tasks</td></tr>';
+        if (submissionsBody) submissionsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--error);">Failed to load submissions</td></tr>';
+    }
+}
+
+function renderTasks(tasks) {
+    const body = document.getElementById('tasks-table-body');
+    if (!body) return;
+    if (!Array.isArray(tasks) || tasks.length === 0) {
+        body.innerHTML = '<tr><td colspan="5"><div class="empty"><i class="fas fa-folder-open"></i><p>No tasks created yet</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = tasks.map(task => `
+        <tr>
+            <td><strong>${escHtml(task.title)}</strong><div class="td-s">${escHtml(task.description || 'No description')}</div></td>
+            <td>${escHtml(task.course)}</td>
+            <td>${escHtml(task.due_date || 'No deadline')}</td>
+            <td>${escHtml(String(task.submissions || 0))}</td>
+            <td>${escHtml(String(task.pending_reviews || 0))}</td>
+        </tr>`).join('');
+}
+
+function renderTaskSubmissions(submissions) {
+    const body = document.getElementById('task-submissions-table-body');
+    if (!body) return;
+    window.taskSubmissionsData = Array.isArray(submissions) ? submissions : [];
+    if (!Array.isArray(submissions) || submissions.length === 0) {
+        body.innerHTML = '<tr><td colspan="7"><div class="empty"><i class="fas fa-folder-open"></i><p>No task submissions yet</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = submissions.map(item => `
+        <tr>
+            <td>
+                <div class="td-user">
+                    <div class="av-init">${escHtml((item.student_name||'?').slice(0,2).toUpperCase())}</div>
+                    <div>
+                        <strong>${escHtml(item.student_name)}</strong>
+                        <div class="td-s">${escHtml(item.email)}</div>
+                    </div>
+                </div>
+            </td>
+            <td>${escHtml(item.task_title)}</td>
+            <td><span class="badge ${item.status === 'approved' ? 'b-approved' : item.status === 'rejected' ? 'b-rejected' : 'b-pending'}">${escHtml(item.status)}</span></td>
+            <td>${escHtml(String(item.score || 0))}</td>
+            <td>${escHtml(item.submission_file_name || 'None')}</td>
+            <td class="td-m">${escHtml(item.submitted_at || '—')}</td>
+            <td><button class="btn btn-view" onclick="viewTaskSubmission(${item.id})"><i class="fas fa-eye"></i> View</button></td>
+        </tr>`).join('');
+}
+
+function createTask() {
+    const modal = document.getElementById('task-modal');
+    if (!modal) return;
+    document.getElementById('task-title').value = '';
+    document.getElementById('task-course').value = 'Web Development';
+    document.getElementById('task-due-date').value = '';
+    document.getElementById('task-description').value = '';
+    modal.classList.add('open');
+}
+
+function closeTaskModal() {
+    document.getElementById('task-modal').classList.remove('open');
+}
+
+async function submitTaskForm() {
+    const title = document.getElementById('task-title').value.trim();
+    const course = document.getElementById('task-course').value.trim();
+    const dueDate = document.getElementById('task-due-date').value;
+    const description = document.getElementById('task-description').value.trim();
+    if (!title || !course) {
+        showToast('Please provide a task title and select a course.', 'error');
+        return;
+    }
+    try {
+        const res = await fetch(`${API}/api/admin/tasks`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, course, description, due_date: dueDate || null })
+        });
+        if (!res.ok) throw new Error('Task create failed');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Failed to create task');
+        closeTaskModal();
+        fetchTasks();
+        showToast('Task created and assigned to course students.', 'success');
+    } catch (err) {
+        console.error('Create task error:', err);
+        showToast('Unable to create task. Please try again.', 'error');
+    }
+}
+
+function viewTaskSubmission(id) {
+    const submissions = window.taskSubmissionsData || [];
+    const item = submissions.find(sub => sub.id === id);
+    if (!item) {
+        showToast('Submission details not available. Please refresh the table.', 'warning');
+        return;
+    }
+
+    const existingModal = document.getElementById('submission-detail-modal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'submission-detail-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.9);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    const fileSection = item.submission_file_name ? `
+        <div style="margin-top:0.85rem;">
+            <strong>Uploaded file:</strong> ${escHtml(item.submission_file_name)}
+            ${item.submission_file_data ? `<div style="margin-top:0.5rem;"><a href="data:${escHtml(item.submission_file_type)};base64,${escHtml(item.submission_file_data)}" download="${escHtml(item.submission_file_name)}" style="color:#facc15;text-decoration:underline;">Download file</a></div>` : '<div style="margin-top:0.5rem;color:#94a3b8;">File preview not available.</div>'}
+        </div>
+    ` : '';
+
+    modal.innerHTML = `
+        <div style="background:#0f172a;border:1px solid rgba(250,204,21,0.25);border-radius:24px;padding:28px;width:100%;max-width:720px;overflow:auto;max-height:90vh;color:#e2e8f0;">
+            <button onclick="document.getElementById('submission-detail-modal')?.remove()" style="border:none;background:none;color:#facc15;font-size:1rem;cursor:pointer;float:right;">Close</button>
+            <h2 style="margin-top:0;color:#fff;">Task Submission Details</h2>
+            <div style="display:grid;gap:0.9rem;margin-top:1rem;">
+                <div><strong>Student:</strong> ${escHtml(item.student_name)}</div>
+                <div><strong>Email:</strong> ${escHtml(item.email)}</div>
+                <div><strong>Task:</strong> ${escHtml(item.task_title)}</div>
+                <div><strong>Status:</strong> ${escHtml(item.status)}</div>
+                <div><strong>Score:</strong> ${escHtml(String(item.score || 0))}</div>
+                <div><strong>Submitted at:</strong> ${escHtml(item.submitted_at || '—')}</div>
+                <div><strong>Answer:</strong><pre style="white-space:pre-wrap;word-break:break-word;background:rgba(255,255,255,0.03);padding:1rem;border-radius:16px;margin-top:0.5rem;">${escHtml(item.answer || 'No answer provided.')}</pre></div>
+                ${fileSection}
+                <div><strong>Remarks:</strong><br>${escHtml(item.remarks || 'No reviewer feedback yet.')}</div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+async function fetchInterviewDetail(id) {
+    const detailCard = document.getElementById('interview-detail-card');
+    const detailBody = document.getElementById('interview-detail-body');
+    if (!detailBody) return;
+    if (detailCard) detailCard.style.display = 'block';
+    detailBody.textContent = 'Loading interview report...';
+    try {
+        const res = await fetch(`${API}/api/admin/interview-results/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const item = await res.json();
+        detailBody.innerHTML = `
+            <div style="display:grid;gap:0.75rem;">
+                <div><strong>Student:</strong> ${escHtml(item.student_name || 'Unknown')}</div>
+                <div><strong>Email:</strong> ${escHtml(item.email || 'Unknown')}</div>
+                <div><strong>Course:</strong> ${escHtml(item.course || 'N/A')}</div>
+                <div><strong>Created:</strong> ${new Date(item.created_at).toLocaleString()}</div>
+                <div><strong>Interview Score:</strong> ${escHtml(String(item.score))}%</div>
+                <div><strong>Feedback Summary:</strong><br>${escHtml(item.feedback || 'No detailed feedback available.')}</div>
+            </div>
+        `;
+    } catch (err) {
+        console.error('Interview detail error:', err);
+        detailBody.textContent = 'Unable to load interview report details.';
+    }
+}
+
+async function fetchMessages() {
+    const body = document.getElementById('messages-table-body');
+    body.innerHTML = '<tr><td colspan="5" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading messages…</td></tr>';
+    try {
+        const res = await fetch(`${API}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) {
+            const bodyText = await res.text();
+            throw new Error(`HTTP ${res.status} ${res.statusText}: ${bodyText}`);
+        }
+        const data = await res.json();
+        allMsgs = Array.isArray(data) ? data : Array.isArray(data?.messages) ? data.messages : [];
+        renderMsgs();
+    } catch (err) {
+        console.error('Messages error:', err);
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--error);"><i class="fas fa-exclamation-circle"></i> Failed to load messages. Check server connection and browser console for details.</td></tr>';
+    }
+}
+
+function renderMsgs() {
+    const body   = document.getElementById('messages-table-body');
+    const search = (document.getElementById('msg-search')?.value || '').toLowerCase();
+    const filtered = allMsgs.filter(m =>
+        !search ||
+        (m.full_name||'').toLowerCase().includes(search) ||
+        (m.email||'').toLowerCase().includes(search) ||
+        (m.subject||'').toLowerCase().includes(search) ||
+        (m.message||'').toLowerCase().includes(search)
+    );
+    if (filtered.length === 0) {
+        body.innerHTML = '<tr><td colspan="5"><div class="empty"><i class="fas fa-inbox"></i><p>No messages found</p></div></td></tr>';
+        return;
+    }
+    body.innerHTML = filtered.map(msg => `
+        <tr>
+            <td>
+                <div class="td-user">
+                    <div class="av-init">${escHtml((msg.full_name||'?').slice(0,2).toUpperCase())}</div>
+                    <div>
+                        <strong>${escHtml(msg.full_name)}</strong>
+                        <div class="td-s">${escHtml(msg.email)}</div>
+                    </div>
+                </div>
+            </td>
+            <td style="font-weight:600;font-size:0.82rem;">${escHtml(msg.subject || 'General Inquiry')}</td>
+            <td class="td-m" style="font-size:0.76rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml((msg.message||'').substring(0,80))}${(msg.message||'').length > 80 ? '…' : ''}</td>
+            <td class="td-m">${new Date(msg.received_at).toLocaleString()}</td>
+            <td><button class="btn btn-view" onclick="viewMsg(${msg.id})"><i class="fas fa-eye"></i> View</button></td>
+        </tr>`).join('');
+}
+
+function viewMsg(id) {
+    const msg = allMsgs.find(m => m.id === id);
+    if (!msg) return;
+    document.getElementById('mm-from').textContent    = `${msg.full_name} — ${msg.email}`;
+    document.getElementById('mm-subject').textContent = msg.subject || '—';
+    document.getElementById('mm-date').textContent    = new Date(msg.received_at).toLocaleString();
+    document.getElementById('mm-body').textContent    = msg.message;
+    document.getElementById('msg-modal').classList.add('open');
+}
+function closeMsgModal() { document.getElementById('msg-modal').classList.remove('open'); }
+
+/* ── Chat ──────────────────────────────────────────────────────── */
+async function fetchChatSessions() {
+    try {
+        const res  = await fetch(`${API}/api/chat/sessions`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+
+        const count       = Array.isArray(data) ? data.length : 0;
+        const totalUnread = Array.isArray(data) ? data.reduce((s, d) => s + (d.unread || 0), 0) : 0;
+        document.getElementById('sessions-count').textContent = `${count} session${count !== 1 ? 's' : ''}`;
+        setBadge('badge-chats', totalUnread);
+
+        const list = document.getElementById('chat-sessions-list');
+        if (!Array.isArray(data) || data.length === 0) {
+            list.innerHTML = '<div class="empty"><i class="fas fa-comments"></i><p>No active sessions</p></div>';
+            return;
+        }
+        list.innerHTML = data.map(s => {
+            const init = (s.user_name || '??').slice(0, 2).toUpperCase();
+            return `
+            <div class="sess-item ${currentSessionId === s.session_id ? 'active' : ''}"
+                 onclick="openChat('${s.session_id}','${escAttr(s.user_name)}','${escAttr(s.user_email)}')">
+                <div class="si-row">
+                    <div class="si-av">${init}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="si-name">${escHtml(s.user_name)}</div>
+                        <div class="si-email">${escHtml(s.user_email)}</div>
+                    </div>
+                    ${s.unread > 0 ? `<span class="unread-badge">${s.unread}</span>` : ''}
+                </div>
+                <div class="si-meta">
+                    <span class="si-time">${timeSince(new Date(s.updated_at))}</span>
+                </div>
+            </div>`;
+        }).join('');
+    } catch (err) {
+        console.error('Chat sessions error:', err);
+    }
+}
+
+async function openChat(sessionId, userName, userEmail) {
+    currentSessionId = sessionId.toString().trim();
+
+    // Notify server that admin is in this session room
+    socket.emit('admin_join_session', currentSessionId);
+
+    const init = (userName || '?').slice(0, 2).toUpperCase();
+    document.getElementById('chat-win-av').textContent    = init;
+    document.getElementById('chat-win-name').textContent  = userName;
+    document.getElementById('chat-win-email').textContent = userEmail;
+    document.getElementById('online-dot').style.display   = '';
+    document.getElementById('chat-input').disabled        = false;
+    document.getElementById('chat-send-btn').disabled     = false;
+    document.getElementById('chat-input').focus();
+    document.getElementById('quick-replies-bar').style.display = '';
+
+    await fetch(`${API}/api/chat/mark-read/${sessionId}`, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+    });
+    fetchChatSessions();
+
+    const box = document.getElementById('chat-box');
+    box.innerHTML = '<div class="chat-empty"><i class="fas fa-spinner fa-spin"></i></div>';
+    try {
+        const res     = await fetch(`${API}/api/chat/history/${sessionId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error(res.status);
+        const history = await res.json();
+        if (!Array.isArray(history) || history.length === 0) {
+            box.innerHTML = '<div class="chat-empty"><i class="fas fa-comment-slash"></i><p>No messages yet. Say hello!</p></div>';
+            return;
+        }
+        box.innerHTML = history.map(m => buildBubble(m.sender, m.message, m.user_name, m.created_at)).join('');
+        box.scrollTop = box.scrollHeight;
+    } catch (err) {
+        box.innerHTML = '<div class="chat-empty" style="color:var(--error);"><i class="fas fa-exclamation-circle"></i><p>Failed to load messages</p></div>';
+    }
+}
+
+function buildBubble(sender, message, senderName, createdAt) {
+    const time  = new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const label = sender === 'admin' ? 'You (Admin)' : (escHtml(senderName) || 'Student');
+    return `
+    <div class="msg-wrap from-${sender}">
+        <div class="msg-lbl">${label}</div>
+        <div class="msg-bubble">${escHtml(message)}</div>
+        <div class="msg-time">${time}</div>
+    </div>`;
+}
+
+function sendChatMessage() {
+    const input   = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message || !currentSessionId) return;
+    socket.emit('admin_message', { 
+        sessionId: currentSessionId, 
+        message: message,
+        adminName: adminName,
+        userEmail: document.getElementById('chat-win-email').textContent
+    });
+    input.value = '';
+    input.focus();
+}
+
+function sendQuickReply(text) {
+    if (!currentSessionId) return;
+    socket.emit('admin_message', { 
+        sessionId: currentSessionId, 
+        message: text,
+        adminName: adminName,
+        userEmail: document.getElementById('chat-win-email').textContent
+    });
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+});
+
+/* ── Socket Events ─────────────────────────────────────────────── */
+socket.on('receive_message', (data) => {
+    // If this is the active chat window, show it immediately
+    if (currentSessionId && data.session_id.toString().trim() === currentSessionId) {
+        const box  = document.getElementById('chat-box');
+        const atBot = box.scrollHeight - box.scrollTop - box.clientHeight < 100;
+        const empty = box.querySelector('.chat-empty');
+        if (empty) empty.remove();
+        box.innerHTML += buildBubble(data.sender, data.message, data.user_name || 'Student', data.created_at);
+        if (atBot) box.scrollTop = box.scrollHeight;
+    }
+});
+
+socket.on('admin_new_message', (data) => {
+    fetchChatSessions();
+    if (data.sender === 'user') {
+        fetchStats();
+        // Show notification if not on support tab
+        if (!document.getElementById('support').classList.contains('active')) {
+            showToast(`💬 New message from ${data.user_name || 'Student'}`, 'info');
+            const notifDot = document.getElementById('notif-dot');
+            notifDot.classList.add('show');
+        }
+    }
+});
+
+/* ── Logout ────────────────────────────────────────────────────── */
+function logout() {
+    sessionStorage.clear();
+    localStorage.removeItem('nexlify_token');
+    localStorage.removeItem('nexlify_logged_in');
+    window.location.href = 'home.html';
+}
+
+/* ── Theme Toggle ──────────────────────────────────────────────── */
+(function initAdminTheme() {
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    const btn = document.getElementById('theme-toggle-admin');
+    if (btn) btn.innerHTML = saved === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+})();
+
+function toggleAdminTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    const btn = document.getElementById('theme-toggle-admin');
+    if (btn) btn.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+}
+
+/* ── Helpers ───────────────────────────────────────────────────── */
+function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+    return String(str || '').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+}
+function timeSince(date) {
+    // Ensure s is at least 0 to handle minor clock desync
+    const s = Math.max(0, Math.floor((Date.now() - new Date(date)) / 1000));
+    if (s < 60)    return 'just now';
+    if (s < 3600)  return Math.floor(s / 60)   + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600)  + 'h ago';
+    return Math.floor(s / 86400) + 'd ago';
+}
+
+/* Auto-refresh chat sessions every 30s while on support tab */
+setInterval(() => {
+    if (document.getElementById('support').classList.contains('active')) fetchChatSessions();
+}, 30000);
+</script>
+</body>
+</html>

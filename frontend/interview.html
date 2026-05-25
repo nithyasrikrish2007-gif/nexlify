@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Mock Interview | Nexlify University</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="interview.css" />
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <h2><i class="fas fa-graduation-cap"></i> Nexlify</h2>
+    </div>
+    <div class="nav-center">
+      <span class="nav-badge"><i class="fas fa-robot"></i> AI Mock Interview</span>
+    </div>
+    <div class="nav-actions">
+      <button id="theme-toggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <a href="dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── SETUP SCREEN ── -->
+<div id="setup-screen" class="setup-screen">
+  <div class="setup-container">
+    <div class="setup-header">
+      <div class="setup-icon"><i class="fas fa-robot"></i></div>
+      <h1>AI Mock Interview</h1>
+      <p>Practice with our intelligent AI interviewer. Get real-time feedback and improve your skills.</p>
+    </div>
+
+    <div class="setup-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-signal"></i> Difficulty</label>
+          <select id="difficulty-select" class="form-select">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate" selected>Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-list-check"></i> Interview Type</label>
+          <select id="type-select" class="form-select">
+            <option value="HR">HR Interview</option>
+            <option value="Technical" selected>Technical Interview</option>
+            <option value="Mixed">Mixed (HR + Technical)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-book"></i> Course</label>
+          <select id="course-select" class="form-select">
+            <option value="Full Stack Development">Full Stack Development</option>
+            <option value="AI & Machine Learning">AI & Machine Learning</option>
+            <option value="Digital Marketing">Digital Marketing</option>
+            <option value="Project Management">Project Management</option>
+            <option value="Cyber Security">Cyber Security</option>
+            <option value="UI/UX Design">UI/UX Design</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setup-features">
+        <div class="feature-pill"><i class="fas fa-microphone"></i> Voice Input</div>
+        <div class="feature-pill"><i class="fas fa-volume-up"></i> AI Voice</div>
+        <div class="feature-pill"><i class="fas fa-video"></i> Camera</div>
+        <div class="feature-pill"><i class="fas fa-brain"></i> Smart Follow-ups</div>
+        <div class="feature-pill"><i class="fas fa-chart-bar"></i> Instant Feedback</div>
+      </div>
+
+      <button id="start-btn" class="btn-start">
+        <i class="fas fa-play"></i> Start Interview
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INTERVIEW SCREEN ── -->
+<div id="interview-screen" class="interview-screen hidden">
+
+  <!-- Top Bar -->
+  <div class="interview-topbar">
+    <div class="topbar-left">
+      <span class="interview-role" id="display-role">Frontend Developer</span>
+      <span class="interview-type-badge" id="display-type">Technical</span>
+      <span class="difficulty-badge" id="display-difficulty">Intermediate</span>
+    </div>
+    <div class="topbar-center">
+      <div class="progress-wrap">
+        <div class="progress-label"><i class="fas fa-circle-dot"></i> <span id="q-current">1</span> / <span id="q-total">8</span> Questions</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="timer-wrap">
+        <i class="fas fa-clock"></i>
+        <span id="timer-display">00:00</span>
+      </div>
+      <button id="end-interview-btn" class="btn-end-interview"><i class="fas fa-stop"></i> End</button>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="interview-layout">
+
+    <!-- LEFT: Camera Panel -->
+    <div class="camera-panel">
+      <div class="camera-header">
+        <span><i class="fas fa-video"></i> You</span>
+        <div class="rec-dot" id="rec-indicator"><span></span> Live</div>
+      </div>
+      <div class="camera-wrap">
+        <video id="user-video" autoplay muted playsinline></video>
+        <div class="camera-placeholder" id="cam-placeholder">
+          <i class="fas fa-user-circle"></i>
+          <p>Camera Off</p>
+        </div>
+        <div class="voice-animation" id="voice-anim">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- AI Avatar -->
+      <div class="ai-avatar-panel">
+        <div class="ai-avatar">
+          <div class="ai-avatar-ring" id="ai-ring"></div>
+          <div class="ai-avatar-icon"><i class="fas fa-robot"></i></div>
+        </div>
+        <div class="ai-info">
+          <span class="ai-name">Alex</span>
+          <span class="ai-role">AI Interviewer · Nexlify</span>
+        </div>
+        <div class="ai-status" id="ai-status">Thinking...</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="media-controls">
+        <button class="ctrl-btn" id="mic-btn" title="Toggle Microphone">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button class="ctrl-btn" id="cam-btn" title="Toggle Camera">
+          <i class="fas fa-video"></i>
+        </button>
+        <button class="ctrl-btn active-ctrl" id="voice-btn" title="Hold to speak / Click to toggle">
+          <i class="fas fa-microphone-lines"></i>
+        </button>
+      </div>
+      <p class="voice-hint" id="voice-hint">Click mic to record your answer</p>
+    </div>
+
+    <!-- RIGHT: Chat + Scripted Answer Panel -->
+    <div class="chat-panel">
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <!-- Typing indicator -->
+      <div class="typing-indicator hidden" id="typing-indicator">
+        <div class="ai-bubble-mini">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="chat-input-area">
+        <div class="input-wrap">
+          <textarea id="user-input" placeholder="Type your answer here... or use the mic to speak" rows="3"></textarea>
+          <div class="input-actions">
+            <button id="replay-btn" class="action-btn" title="Replay Question"><i class="fas fa-redo"></i> Replay</button>
+            <button id="skip-btn" class="action-btn" title="Skip Question"><i class="fas fa-forward"></i> Skip</button>
+            <button id="clear-btn" class="action-btn" title="Clear"><i class="fas fa-xmark"></i></button>
+            <button id="send-btn" class="action-btn send-action" title="Send Answer"><i class="fas fa-paper-plane"></i> Send</button>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<!-- ── RESULTS SCREEN ── -->
+<div id="results-screen" class="results-screen hidden">
+  <div class="results-container">
+    <div class="results-header">
+      <div class="results-icon"><i class="fas fa-trophy"></i></div>
+      <h1>Interview Complete!</h1>
+      <p id="results-subtitle">Here's your detailed performance analysis</p>
+    </div>
+
+    <!-- Score Cards -->
+    <div class="score-grid">
+      <div class="score-card" id="score-technical">
+        <div class="score-icon"><i class="fas fa-code"></i></div>
+        <div class="score-label">Technical</div>
+        <div class="score-value"><span class="score-num">0</span><span>/10</span></div>
+        <div class="score-bar"><div class="score-fill"></div></div>
+      </div>
+      <div class="score-card" id="score-communication">
+        <div class="score-icon"><i class="fas fa-comments"></i></div>
+        <div class="score-label">Communication</div>
+        <div class="score-value"><span class="score-num">0</span><span>/10</span></div>
+        <div class="score-bar"><div class="score-fill"></div></div>
+      </div>
+      <div class="score-card" id="score-confidence">
+        <div class="score-icon"><i class="fas fa-fire"></i></div>
+        <div class="score-label">Confidence</div>
+        <div class="score-value"><span class="score-num">0</span><span>/10</span></div>
+        <div class="score-bar"><div class="score-fill"></div></div>
+      </div>
+      <div class="score-card overall-card" id="score-overall">
+        <div class="score-icon"><i class="fas fa-star"></i></div>
+        <div class="score-label">Overall Score</div>
+        <div class="score-value"><span class="score-num">0</span><span>/10</span></div>
+        <div class="score-bar"><div class="score-fill"></div></div>
+      </div>
+    </div>
+
+    <!-- Feedback Sections -->
+    <div class="feedback-grid">
+      <div class="feedback-card strengths-card">
+        <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
+        <ul id="strengths-list"></ul>
+      </div>
+      <div class="feedback-card weaknesses-card">
+        <h3><i class="fas fa-triangle-exclamation"></i> Areas to Improve</h3>
+        <ul id="weaknesses-list"></ul>
+      </div>
+    </div>
+
+    <div class="suggestions-card">
+      <h3><i class="fas fa-lightbulb"></i> Improvement Suggestions</h3>
+      <div id="suggestions-content"></div>
+    </div>
+
+    <div class="suggestions-card">
+      <h3><i class="fas fa-file-lines"></i> Full Interview Report</h3>
+      <pre id="report-text" class="report-text">Your detailed report will appear here after the interview.</pre>
+    </div>
+
+    <div class="results-actions">
+      <button id="download-report-btn" class="btn-secondary-action"><i class="fas fa-download"></i> Download Report</button>
+      <button id="retry-btn" class="btn-primary-action"><i class="fas fa-redo"></i> Try Again</button>
+      <button id="new-interview-btn" class="btn-secondary-action"><i class="fas fa-plus"></i> New Interview</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="loader-content">
+    <div class="loader-ring"></div>
+    <p id="loader-text">Connecting to AI Interviewer...</p>
+  </div>
+</div>
+
+<script src="interview.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Nexlify University</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><i class="fas fa-university"></i> Nexlify</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link active">About</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-auth"><a href="login.html" class="btn-login">Login</a></li>
+                <li class="nav-auth"><a href="signup.html" class="btn-signup">Get Started</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="signup.html" class="btn-signup">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PROFILE PANEL -->
+    <div class="profile-overlay" id="profileOverlay" onclick="closePanel()"></div>
+    <div class="profile-panel" id="profilePanel">
+        <div class="panel-header">
+            <div class="panel-avatar"><i class="fas fa-user-circle"></i></div>
+            <div class="panel-info">
+                <h3 id="panelName">Student</h3>
+                <span id="panelRole" class="panel-role">Student</span>
+                <p id="panelEmail" class="panel-email"></p>
+            </div>
+            <button class="panel-close" onclick="closePanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-menu">
+            <a href="dashboard.html" class="panel-item"><i class="fas fa-th-large"></i> My Dashboard</a>
+            <a href="courses.html" class="panel-item"><i class="fas fa-book-open"></i> Browse Courses</a>
+            <a href="contact.html" class="panel-item"><i class="fas fa-headset"></i> Support</a>
+            <button class="panel-item panel-logout" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <section class="about-hero">
+        <div class="about-hero-overlay"></div>
+        <div class="container">
+            <div class="about-hero-content">
+                <h1>About Nexlify University</h1>
+                <p>Established in 1995, Nexlify University has been shaping future leaders through world-class education, research, and innovation for over 25 years.</p>
+                <div class="about-hero-stats">
+                    <div class="stat-item"><span>75K+</span><div>Students</div></div>
+                    <div class="stat-item"><span>250+</span><div>Programs</div></div>
+                    <div class="stat-item"><span>95%</span><div>Placement</div></div>
+                    <div class="stat-item"><span>120+</span><div>Countries</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="story-section">
+        <div class="container">
+            <div class="story-content">
+                <div class="story-text">
+                    <h2>Our Journey of Excellence</h2>
+                    <p>Founded with a vision to create future leaders, Nexlify University has grown from a modest institution to a globally recognized center of learning.</p>
+                    <p>We partner with 500+ companies globally to ensure every student graduates with real-world skills and guaranteed career opportunities.</p>
+                    <div class="story-features">
+                        <div class="feature-item"><i class="fas fa-award"></i><span>Ranked #1 in Region for 5 Consecutive Years</span></div>
+                        <div class="feature-item"><i class="fas fa-globe"></i><span>Global Partnerships with 120+ Universities</span></div>
+                        <div class="feature-item"><i class="fas fa-users"></i><span>25+ Years of Academic Legacy</span></div>
+                        <div class="feature-item"><i class="fas fa-flask"></i><span>50+ Research Centers & Innovation Labs</span></div>
+                    </div>
+                </div>
+                <div class="story-image">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2070&q=80" alt="Nexlify Campus">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mission-vision">
+        <div class="container">
+            <h2 class="section-title">What Drives Us</h2>
+            <div class="mv-grid">
+                <div class="mv-card">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>Our Mission</h3>
+                    <p>To provide world-class education that empowers students to excel in their chosen fields and become responsible global citizens.</p>
+                </div>
+                <div class="mv-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>Our Vision</h3>
+                    <p>To be the most innovative and impactful university, shaping the leaders of tomorrow through excellence in teaching and research.</p>
+                </div>
+                <div class="mv-card">
+                    <i class="fas fa-handshake"></i>
+                    <h3>Our Values</h3>
+                    <p>Integrity, Innovation, Excellence, Inclusivity, and Leadership guide everything we do — from classrooms to boardrooms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Campus Life at Nexlify</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-building"></i></div>
+                    <h3>Modern Infrastructure</h3>
+                    <p>State-of-the-art classrooms, smart labs, sports facilities, and student housing spread across a 200-acre campus.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Tech-Enabled Learning</h3>
+                    <p>AI-powered learning platforms, digital libraries, and 24/7 lab access to keep students ahead of the curve.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Student Wellbeing</h3>
+                    <p>Dedicated counseling, health centers, sports clubs, and cultural events to ensure a balanced student life.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+                    <h3>Awards & Recognition</h3>
+                    <p>Recipient of 100+ national and international awards for academic excellence, research, and innovation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Join Nexlify University?</h2>
+            <p>Be part of our legacy of excellence and start your journey today</p>
+            <div class="cta-buttons">
+                <a href="signup.html" class="btn-primary btn-large">Apply Now</a>
+                <a href="contact.html" class="btn-secondary btn-large">Contact Admissions</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-university"></i> Nexlify</div>
+                    <p>Empowering students with world-class education, industry exposure, and career-ready skills since 1995.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="courses.html">Full Stack Dev</a></li>
+                        <li><a href="courses.html">AI & ML</a></li>
+                        <li><a href="courses.html">Cyber Security</a></li>
+                        <li><a href="courses.html">UI/UX Design</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#">admissions@nexlify.edu</a></li>
+                        <li><a href="#">+1 (555) 123-4567</a></li>
+                        <li><a href="#">Silicon Valley, CA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© 2025 Nexlify University. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

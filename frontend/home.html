@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexlify University - Excellence in Education</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo"><h2><i class="fas fa-university"></i> Nexlify</h2></div>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link active">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-auth"><a href="login.html" class="btn-login">Login</a></li>
+                <li class="nav-auth"><a href="signup.html" class="btn-signup">Get Started</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <button id="theme-toggle" title="Toggle Dark/Light Mode"></button>
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="signup.html" class="btn-signup">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-overlay" id="profileOverlay" onclick="closePanel()"></div>
+    <div class="profile-panel" id="profilePanel">
+        <div class="panel-header">
+            <div class="panel-avatar"><i class="fas fa-user-circle"></i></div>
+            <div class="panel-info">
+                <h3 id="panelName">Student</h3>
+                <span id="panelRole" class="panel-role">Student</span>
+                <p id="panelEmail" class="panel-email"></p>
+            </div>
+            <button class="panel-close" onclick="closePanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="panel-menu">
+            <a href="dashboard.html" class="panel-item"><i class="fas fa-th-large"></i> My Dashboard</a>
+            <a href="courses.html" class="panel-item"><i class="fas fa-book-open"></i> Browse Courses</a>
+            <a href="contact.html" class="panel-item"><i class="fas fa-headset"></i> Support</a>
+            <button class="panel-item panel-logout" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <section id="home" class="hero">
+        <div class="slideshow">
+            <div class="slide active" style="background-image:url('home.webp')"></div>
+            <div class="slide" style="background-image:url('home.jpg')"></div>
+            <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1920&q=80')"></div>
+            <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80')"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Discover Your<br>Academic Destiny</h1>
+                <p>Join 75K+ students pursuing excellence at the world's leading university</p>
+                <div class="hero-buttons">
+                    <a href="courses.html" class="btn-primary btn-large">
+                        <i class="fas fa-graduation-cap"></i> Explore Programs
+                    </a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="75">0</span>
+                    <span>k+</span>
+                    <div>Students</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="250">0</span>
+                    <span>+</span>
+                    <div>Programs</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="95">0</span>
+                    <span>%</span>
+                    <div>Placement</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-dots">
+            <span class="dot active" onclick="goToSlide(0)"></span>
+            <span class="dot" onclick="goToSlide(1)"></span>
+            <span class="dot" onclick="goToSlide(2)"></span>
+            <span class="dot" onclick="goToSlide(3)"></span>
+        </div>
+        <div class="scroll-indicator"><i class="fas fa-chevron-down"></i></div>
+    </section>
+
+    <section class="features" id="about">
+        <div class="container">
+            <h2 class="section-title">Why Choose Nexlify?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3>World-Class Faculty</h3>
+                    <p>Learn from renowned professors and industry experts with decades of experience</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                    <h3>Global Exposure</h3>
+                    <p>International collaborations, exchange programs, and global research opportunities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-briefcase"></i></div>
+                    <h3>100% Placement</h3>
+                    <p>Guaranteed career opportunities with top MNCs and industry leaders</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-flask"></i></div>
+                    <h3>Research Excellence</h3>
+                    <p>Cutting-edge labs and innovation centers for groundbreaking research</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <!-- ===== PLACEMENTS SECTION ===== -->
+<section class="placements" id="courses">
+    <div class="container">
+
+        <div class="section-header">
+            <h2 class="section-title">Where Our Students Got Placed</h2>
+            <p class="section-subtitle">
+                95% placement record with top global companies
+            </p>
+        </div>
+
+        <div class="placements-grid">
+
+    <!-- Google -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+        <div class="placement-stats">250+</div>
+    </div>
+
+    <!-- Microsoft -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">
+        <div class="placement-stats">180+</div>
+    </div>
+
+    <!-- Amazon -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon">
+        <div class="placement-stats">320+</div>
+    </div>
+
+    <!-- Apple -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
+        <div class="placement-stats">150+</div>
+    </div>
+
+    <!-- Tesla -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" alt="Tesla">
+        <div class="placement-stats">90+</div>
+    </div>
+
+    <!-- NVIDIA -->
+    <div class="placement-company">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg" alt="NVIDIA">
+        <div class="placement-stats">120+</div>
+    </div>
+
+</div>
+    </div>
+</section>
+
+
+    <section class="cta">
+        <div class="container">
+            <h2>Your Future Starts Here</h2>
+            <p>Take the first step towards an extraordinary academic journey</p>
+            <div class="cta-buttons">
+                <a href="signup.html" class="btn-primary btn-large">Apply Now</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="enroll-modal">
+        <div class="enroll-box">
+            <button class="enroll-close" onclick="closeEnroll()">&#10005;</button>
+            <h2>🎓 Enroll at Nexlify</h2>
+            <input class="enroll-input" placeholder="Full Name">
+            <input class="enroll-input" placeholder="Email Address">
+            <input class="enroll-input" placeholder="Phone Number">
+            <select class="enroll-input" id="enroll-course">
+                <option value="">Select Program</option>
+                <option>Full Stack Development</option>
+                <option>Cyber Security</option>
+                <option>AI & Machine Learning</option>
+                <option>Digital Marketing</option>
+                <option>UI/UX Design</option>
+                <option>Project Management</option>
+            </select>
+            <button class="enroll-submit" onclick="submitEnroll()">Submit Application</button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-university"></i> Nexlify</div>
+                    <p>Empowering students with world-class education, industry exposure, and career-ready skills since 1995.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="courses.html">Courses</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="courses.html">Full Stack Dev</a></li>
+                        <li><a href="courses.html">AI & ML</a></li>
+                        <li><a href="courses.html">Cyber Security</a></li>
+                        <li><a href="courses.html">UI/UX Design</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#">admissions@nexlify.edu</a></li>
+                        <li><a href="#">+1 (555) 123-4567</a></li>
+                        <li><a href="#">Silicon Valley, CA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© 2025 Nexlify University. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-btn" onclick="toggleChat()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <div id="chat-window">
+        <div id="chat-header">
+            <span><i class="fas fa-robot"></i> Nexlify Assistant</span>
+            <button onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-messages">
+            <div class="bot-msg">Hi! 👋 I'm the Nexlify Assistant. How can I help you today?
+                <div class="quick-replies">
+                    <button onclick="quickReply('Courses')">Courses</button>
+                    <button onclick="quickReply('Admission')">Admission</button>
+                    <button onclick="quickReply('Fees')">Fees</button>
+                    <button onclick="quickReply('Placement')">Placement</button>
+                </div>
+            </div>
+        </div>
+        <div id="chat-input-area">
+            <input id="chat-input" type="text" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <style>
+        #chat-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #6c63ff; color: #fff;
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; cursor: pointer; z-index: 9999;
+            box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+        }
+        #chat-window {
+            display: none; position: fixed; bottom: 100px; right: 30px;
+            width: 320px; background: #fff; border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 9999;
+            flex-direction: column; overflow: hidden;
+        }
+        #chat-header {
+            background: #6c63ff; color: #fff;
+            padding: 14px 16px; display: flex;
+            justify-content: space-between; align-items: center; font-weight: 600;
+        }
+        #chat-header button { background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; }
+        #chat-messages {
+            padding: 14px; height: 260px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .bot-msg, .user-msg {
+            max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5;
+        }
+        .bot-msg { background: #f0eeff; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user-msg { background: #6c63ff; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .quick-replies { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .quick-replies button {
+            background: #fff; border: 1px solid #6c63ff; color: #6c63ff;
+            border-radius: 20px; padding: 4px 12px; font-size: 12px; cursor: pointer;
+        }
+        .quick-replies button:hover { background: #6c63ff; color: #fff; }
+        #chat-input-area {
+            display: flex; border-top: 1px solid #eee; padding: 10px;
+        }
+        #chat-input {
+            flex: 1; border: 1px solid #ddd; border-radius: 20px;
+            padding: 8px 14px; font-size: 13px; outline: none;
+        }
+        #chat-input-area button {
+            background: #6c63ff; color: #fff; border: none;
+            border-radius: 50%; width: 36px; height: 36px;
+            margin-left: 8px; cursor: pointer; font-size: 14px;
+        }
+    </style>
+
+    <script>
+        const courseDetails = {
+            'full stack': {
+                name: 'Full Stack Development',
+                duration: '12 months',
+                fee: '$2,500',
+                skills: 'HTML, CSS, JavaScript, React, Node.js, MongoDB, SQL',
+                placement: '98%',
+                salary: '$70,000 - $120,000/year',
+                companies: 'Google, Amazon, Microsoft, Flipkart'
+            },
+            'cyber security': {
+                name: 'Cyber Security',
+                duration: '10 months',
+                fee: '$2,200',
+                skills: 'Network Security, Ethical Hacking, Penetration Testing, SIEM, Cryptography',
+                placement: '95%',
+                salary: '$80,000 - $130,000/year',
+                companies: 'IBM, Cisco, Palo Alto, Deloitte'
+            },
+            'ai': {
+                name: 'AI & Machine Learning',
+                duration: '12 months',
+                fee: '$3,000',
+                skills: 'Python, TensorFlow, Deep Learning, NLP, Computer Vision, Data Science',
+                placement: '97%',
+                salary: '$90,000 - $150,000/year',
+                companies: 'Google, Tesla, NVIDIA, OpenAI'
+            },
+            'machine learning': {
+                name: 'AI & Machine Learning',
+                duration: '12 months',
+                fee: '$3,000',
+                skills: 'Python, TensorFlow, Deep Learning, NLP, Computer Vision, Data Science',
+                placement: '97%',
+                salary: '$90,000 - $150,000/year',
+                companies: 'Google, Tesla, NVIDIA, OpenAI'
+            },
+            'digital marketing': {
+                name: 'Digital Marketing',
+                duration: '6 months',
+                fee: '$1,200',
+                skills: 'SEO, SEM, Social Media, Google Ads, Content Marketing, Analytics',
+                placement: '93%',
+                salary: '$50,000 - $90,000/year',
+                companies: 'HubSpot, Salesforce, Meta, Google'
+            },
+            'ui ux': {
+                name: 'UI/UX Design',
+                duration: '8 months',
+                fee: '$1,800',
+                skills: 'Figma, Adobe XD, Wireframing, Prototyping, User Research, Design Systems',
+                placement: '94%',
+                salary: '$60,000 - $110,000/year',
+                companies: 'Apple, Adobe, Airbnb, Spotify'
+            },
+            'ui/ux': {
+                name: 'UI/UX Design',
+                duration: '8 months',
+                fee: '$1,800',
+                skills: 'Figma, Adobe XD, Wireframing, Prototyping, User Research, Design Systems',
+                placement: '94%',
+                salary: '$60,000 - $110,000/year',
+                companies: 'Apple, Adobe, Airbnb, Spotify'
+            },
+            'project management': {
+                name: 'Project Management',
+                duration: '6 months',
+                fee: '$1,500',
+                skills: 'Agile, Scrum, PMP, Risk Management, Jira, MS Project',
+                placement: '92%',
+                salary: '$65,000 - $115,000/year',
+                companies: 'Accenture, TCS, Infosys, Wipro'
+            }
+        };
+
+        function getCourseCard(c) {
+            return `<b>🎓 ${c.name}</b><br>
+⏱ Duration: ${c.duration}<br>
+💰 Fee: ${c.fee}<br>
+🛠 Skills: ${c.skills}<br>
+📈 Placement: ${c.placement}<br>
+💵 Avg Salary: ${c.salary}<br>
+🏢 Top Recruiters: ${c.companies}<br>
+<a href='courses.html'>Enroll Now →</a>`;
+        }
+
+        function getAllCoursesReply() {
+            return `We offer <b>6 programs</b> at Nexlify:<br><br>
+1️⃣ <b>Full Stack Development</b> – 12 months | $2,500<br>
+2️⃣ <b>AI & Machine Learning</b> – 12 months | $3,000<br>
+3️⃣ <b>Cyber Security</b> – 10 months | $2,200<br>
+4️⃣ <b>UI/UX Design</b> – 8 months | $1,800<br>
+5️⃣ <b>Digital Marketing</b> – 6 months | $1,200<br>
+6️⃣ <b>Project Management</b> – 6 months | $1,500<br><br>
+Ask me about any specific course for full details! Or <a href='courses.html'>view all →</a>`;
+        }
+
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+            win.style.flexDirection = 'column';
+        }
+
+        function addMessage(text, type) {
+            const msgs = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = type === 'user' ? 'user-msg' : 'bot-msg';
+            div.innerHTML = text;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        function addBotWithQuickReplies(text, replies) {
+            const msgs = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'bot-msg';
+            const btns = replies.map(r => `<button onclick="quickReply('${r}')">${r}</button>`).join('');
+            div.innerHTML = text + `<div class="quick-replies">${btns}</div>`;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        // --- Bot reply logic ---
+        function getBotReply(msg) {
+
+            const m = msg.toLowerCase().trim();
+
+            // Greetings
+            if (/^(hi+|he+llo+|hey+|hii+|helo+|howdy|sup|yo|good morning|good afternoon|good evening|greetings|hai|helo|hii)/.test(m)) {
+                setTimeout(() => addBotWithQuickReplies(
+                    'Would you like to explore our courses? 🎓',
+                    ['Yes, show courses', 'Admission Info', 'Fees & Scholarship', 'Contact Us']
+                ), 600);
+                return 'Hello! 👋 Welcome to Nexlify University! Great to have you here. 😊';
+            }
+
+            // How are you
+            if (m.includes('how are you') || m.includes('how r you') || m.includes('how are u') || m.includes('how r u'))
+                return "I'm doing great, thanks for asking! 😊 How can I assist you today?";
+
+            // Yes to explore courses
+            if (m === 'yes' || m === 'yes, show courses' || m === 'yes please' || m === 'sure' || m === 'yeah' || m === 'yep' || m === 'ok' || m === 'okay')
+                return getAllCoursesReply();
+
+            // All courses
+            if ((m.includes('all course') || m.includes('all program') || m.includes('list of course') || m.includes('what course') || m.includes('which course') || m.includes('available course') || m === 'courses' || m === 'programs'))
+                return getAllCoursesReply();
+
+            // Specific course details
+            for (const key in courseDetails) {
+                if (m.includes(key)) return getCourseCard(courseDetails[key]);
+            }
+
+            // General course mention
+            if (m.includes('course') || m.includes('program') || m.includes('subject') || m.includes('study'))
+                return getAllCoursesReply();
+
+            // Admission
+            if (m.includes('admission') || m.includes('apply') || m.includes('enroll') || m.includes('join') || m.includes('register'))
+                return "Admissions are open! 🎉 Fill out the form and our team will contact you within 24 hours. <a href='signup.html'>Apply Now →</a>";
+
+            // Fees
+            if (m.includes('fee') || m.includes('cost') || m.includes('price') || m.includes('tuition'))
+                return "💰 Fees range from <b>$1,200 to $3,000</b> depending on the program. EMI options available! Ask about a specific course for exact fees.";
+
+            // Scholarship
+            if (m.includes('scholarship') || m.includes('discount') || m.includes('financial aid') || m.includes('free'))
+                return "🎓 We offer merit-based scholarships up to <b>50% off</b> for eligible students. Contact admissions@nexlify.edu to apply for a scholarship.";
+
+            // Placement
+            if (m.includes('placement') || m.includes('job') || m.includes('career') || m.includes('hired') || m.includes('recruit'))
+                return "📊 We have a <b>95% placement record!</b><br>Top recruiters: Google (250+), Amazon (320+), Microsoft (180+), Apple (150+), Tesla (90+), NVIDIA (120+).";
+
+            // Salary
+            if (m.includes('salary') || m.includes('package') || m.includes('ctc') || m.includes('pay'))
+                return "💵 Average salary packages range from <b>$50,000 to $150,000/year</b> depending on the program and role. AI & ML graduates earn the highest!";
+
+            // Duration
+            if (m.includes('duration') || m.includes('how long') || m.includes('long is') || m.includes('months') || m.includes('years'))
+                return "⏱ Program durations: 6 months (Digital Marketing, Project Mgmt), 8 months (UI/UX), 10 months (Cyber Security), 12 months (Full Stack, AI & ML).";
+
+            // Location / Campus
+            if (m.includes('location') || m.includes('address') || m.includes('campus') || m.includes('where') || m.includes('situated') || m.includes('city'))
+                return "📍 Our campus is in <b>Silicon Valley, CA</b>. We also offer fully online programs for remote learners worldwide!";
+
+            // Online
+            if (m.includes('online') || m.includes('remote') || m.includes('virtual') || m.includes('from home'))
+                return "💻 Yes! All our programs are available <b>online</b>. Learn from anywhere at your own pace with live sessions and recorded lectures.";
+
+            // Contact
+            if (m.includes('contact') || m.includes('phone') || m.includes('email') || m.includes('reach') || m.includes('support') || m.includes('help'))
+                return "📧 admissions@nexlify.edu<br>📞 +1 (555) 123-4567<br>📍 Silicon Valley, CA<br><a href='contact.html'>Contact Page →</a>";
+
+            // Faculty
+            if (m.includes('faculty') || m.includes('teacher') || m.includes('professor') || m.includes('instructor') || m.includes('mentor'))
+                return "👨‍🏫 Our faculty are industry experts and professors from top universities with <b>10–30 years</b> of experience at companies like Google, Microsoft, and MIT.";
+
+            // Certificate
+            if (m.includes('certificate') || m.includes('degree') || m.includes('diploma') || m.includes('credential'))
+                return "🏆 All programs award <b>industry-recognized certificates</b> upon completion, accepted by top global companies.";
+
+            // About Nexlify
+            if (m.includes('nexlify') || m.includes('about') || m.includes('university') || m.includes('college') || m.includes('who are you'))
+                return "🏛 Nexlify University was founded in <b>1995</b> in Silicon Valley. We have 75,000+ students, 250+ programs, and a 95% placement record. One of the world's leading tech universities!";
+
+            // Login / Signup
+            if (m.includes('login') || m.includes('sign in') || m.includes('log in'))
+                return "🔐 Login to your account here: <a href='login.html'>Login →</a>";
+            if (m.includes('signup') || m.includes('sign up') || m.includes('create account') || m.includes('new account'))
+                return "✍️ Create your account here: <a href='signup.html'>Sign Up →</a>";
+
+            // Thanks
+            if (m.includes('thank') || m.includes('thanks') || m.includes('thnx') || m.includes('ty') || m.includes('thx'))
+                return "You're welcome! 😊 Feel free to ask anything else about Nexlify.";
+
+            // Bye
+            if (m.includes('bye') || m.includes('goodbye') || m.includes('see you') || m.includes('cya') || m.includes('take care'))
+                return "Goodbye! 👋 Have a wonderful day! We hope to see you at Nexlify soon. 🎓";
+
+            return `<span>🤔 I'm not sure about that. Try asking about <b>courses, fees, admission</b>.</span><div class="quick-replies"><button onclick="switchToAdminChat()">💬 Chat with Admin</button></div>`;
+        }
+    </script>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+    let liveMode = false;
+    let chatSocket = null;
+    let currentSessionId = null;
+    let chatUser = {};  // module-level so sendMessage / quickReply can access it
+
+    function switchToAdminChat() {
+        chatUser = JSON.parse(localStorage.getItem('nexlify_user') || '{}');
+        const token = localStorage.getItem('nexlify_token');
+
+        if (!chatUser.email) {
+            addMessage('Please <a href="login.html">login</a> first to chat with admin.', 'bot');
+            return;
+        }
+
+        // Fetch previous history from DB
+        fetch(`${API}/api/chat/history/user/${chatUser.email}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(history => {
+            const msgsBox = document.getElementById('chat-messages');
+            // Clear current messages to show full history properly if needed
+            msgsBox.innerHTML = ''; 
+            history.forEach(m => {
+                const prefix = m.sender === 'admin' ? '🛡️ <b>Admin:</b> ' : '';
+                addMessage(prefix + m.message, m.sender === 'admin' ? 'bot' : 'user');
+            });
+        });
+        
+        // Create or get chat session
+        fetch(`${API}/api/chat/session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: chatUser.email, name: chatUser.name })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                liveMode = true;
+                currentSessionId = data.sessionId;
+                document.querySelector('#chat-header span').innerHTML = '<i class="fas fa-user-shield"></i> Live Admin Chat';
+                const sb = document.getElementById('switch-chat-btn');
+                if (sb) sb.style.display = 'inline-block';
+                addMessage('👋 You are now connected to our support team. Type your message below.', 'bot');
+                
+                if (!chatSocket) {
+                    chatSocket = io(API);
+
+                    // Join session room reliably on every (re)connect
+                    chatSocket.on('connect', function() {
+                        if (currentSessionId) {
+                            chatSocket.emit('user_join', {
+                                sessionId: currentSessionId,
+                                email: chatUser.email,
+                                name: chatUser.name
+                            });
+                        }
+                    });
+
+                    chatSocket.on('reconnect', function() {
+                        if (currentSessionId) {
+                            chatSocket.emit('user_join', {
+                                sessionId: currentSessionId,
+                                email: chatUser.email,
+                                name: chatUser.name
+                            });
+                        }
+                    });
+
+                    chatSocket.on('admin_reply', function(msg) {
+                        addMessage('🛡️ <b>Admin:</b> ' + msg.message, 'bot');
+                        const win = document.getElementById('chat-window');
+                        if (win.style.display !== 'flex') {
+                            document.getElementById('chat-btn').style.background = '#ef4444';
+                        }
+                    });
+                }
+                document.getElementById('chat-btn').style.background = '#6c63ff';
+                document.getElementById('chat-input').focus();
+            }
+        })
+        .catch(err => {
+            console.error('Chat session error:', err);
+            addMessage('Failed to connect to admin chat. Please try again.', 'bot');
+        });
+    }
+
+    function switchToBotChat() {
+        liveMode = false;
+        document.querySelector('#chat-header span').innerHTML = '<i class="fas fa-robot"></i> Nexlify Assistant';
+        const sb = document.getElementById('switch-chat-btn');
+        if (sb) sb.style.display = 'none';
+        addMessage('Switched back to AI Assistant 😊', 'bot');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.getElementById('chat-header');
+        if (!header) return;
+        const sb = document.createElement('button');
+        sb.id = 'switch-chat-btn';
+        sb.title = 'Back to AI Bot';
+        sb.style.cssText = 'background:none;border:1px solid rgba(255,255,255,0.5);color:#fff;font-size:11px;cursor:pointer;margin-right:6px;display:none;border-radius:6px;padding:2px 8px;font-family:inherit;';
+        sb.innerHTML = '<i class="fas fa-robot"></i> Bot';
+        sb.onclick = switchToBotChat;
+        header.insertBefore(sb, header.querySelector('button'));
+    });
+
+    window.sendMessage = function() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        addMessage(text, 'user');
+        if (liveMode && currentSessionId) {
+            if (chatSocket) {
+                chatSocket.emit('user_message', { 
+                    sessionId: currentSessionId, 
+                    message: text, 
+                    email: chatUser.email, 
+                    name: chatUser.name 
+                });
+            } else {
+                addMessage('Connecting... please try again.', 'bot');
+            }
+        } else {
+            setTimeout(() => addMessage(getBotReply(text), 'bot'), 500);
+        }
+    };
+
+    window.quickReply = function(topic) {
+        addMessage(topic, 'user');
+        if (liveMode && currentSessionId) {
+            if (chatSocket) {
+                chatSocket.emit('user_message', { 
+                    sessionId: currentSessionId, 
+                    message: topic, 
+                    email: chatUser.email, 
+                    name: chatUser.name 
+                });
+            }
+        } else {
+            setTimeout(() => addMessage(getBotReply(topic), 'bot'), 500);
+        }
+    };
+    </script>
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        function goToSlide(n){
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = n;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+        setInterval(function(){ goToSlide((currentSlide + 1) % slides.length); }, 4000);
+    </script>
+</body>
+</html>
