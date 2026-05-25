@@ -135,7 +135,7 @@ function rateLimit(maxRequests = 10, windowMs = 60000) {
 
 // Middleware
 const allowedOrigins = new Set([
-    'http://localhost:8080',
+    'https://nexlify-sable.vercel.app/',
     'http://127.0.0.1:8080',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
@@ -165,7 +165,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8080/auth/google/callback"
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://nexlify-sable.vercel.app//auth/google/callback"
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
@@ -190,7 +190,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL || "http://localhost:8080/auth/github/callback"
+        callbackURL: process.env.GITHUB_CALLBACK_URL || "https://nexlify-sable.vercel.app//auth/github/callback"
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
