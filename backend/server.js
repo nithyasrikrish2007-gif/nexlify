@@ -141,10 +141,14 @@ const allowedOrigins = new Set([
     'http://127.0.0.1:5500'
 ]);
 if (process.env.BASE_URL) allowedOrigins.add(process.env.BASE_URL);
+if (process.env.BASE_URL) {
+    allowedOrigins.add(process.env.BASE_URL.replace(/\/$/, ""));
+}
 
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || origin === 'null' || allowedOrigins.has(origin)) return callback(null, true);
+        if (!origin || origin === 'null' || allowedOrigins.has(origin.replace(/\/$/, ""))) return callback(null, true);
         callback(new Error('CORS origin denied'));
     },
     methods: ['GET', 'POST', 'PATCH'],
@@ -210,10 +214,11 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 
 // Database — single pool
 const db = mysql.createPool({
-    host             : process.env.DB_HOST || 'localhost',
+    host             : process.env.DB_HOST || 'zephyr.proxy.rlwy.net',
+    port              : process.env.DB_PORT || 3306,
     user             : process.env.DB_USER || 'root',
     password         : process.env.DB_PASSWORD || '',
-    database         : process.env.DB_NAME || 'nexlify',
+    database         : process.env.DB_NAME || 'railway',
     waitForConnections: true,
     connectionLimit  : 10,
     multipleStatements: true,
