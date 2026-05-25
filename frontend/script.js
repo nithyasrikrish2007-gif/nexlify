@@ -262,7 +262,7 @@ function logoutUser() {
     localStorage.removeItem('nexlify_token');
     sessionStorage.clear();
     showToast('👋 Logged out successfully!');
-    setTimeout(() => { window.location.href = 'home.html'; }, 1500);
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
 }
 
 function animateStats() {
@@ -1105,7 +1105,7 @@ window.resendOtp = async function(email) {
 function initSignupForm() {
     const form = document.getElementById('signupForm');
     if (!form) return;
-    if (localStorage.getItem('nexlify_logged_in') === 'true') { window.location.href = 'home.html'; return; }
+    if (localStorage.getItem('nexlify_logged_in') === 'true') { window.location.href = 'index.html'; return; }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();

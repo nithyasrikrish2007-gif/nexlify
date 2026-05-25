@@ -2558,7 +2558,7 @@ app.get('/api/admin/interview-results/:id', authenticateToken, requireAdmin, asy
 
 // ── Start Server ──────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
-app.get('/', (req, res) => res.redirect('/home.html'));
+app.get('/', (req, res) => res.redirect('/index.html'));
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -2572,10 +2572,10 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
     console.log('\x1b[36m%s\x1b[0m', `🚀 Server: http://localhost:${PORT}`);
-    console.log('\x1b[33m%s\x1b[0m', `📁 Website: http://localhost:${PORT}/home.html`);
+    console.log('\x1b[33m%s\x1b[0m', `📁 Website: http://localhost:${PORT}/index.html`);
     if (process.env.NODE_ENV !== 'production' && process.platform === 'win32') {
-        exec(`start chrome http://localhost:${PORT}/home.html`, (err) => {
-            if (err) exec(`start http://localhost:${PORT}/home.html`);
+        exec(`start chrome http://localhost:${PORT}/index.html`, (err) => {
+            if (err) exec(`start http://localhost:${PORT}/index.html`);
         });
     }
 });
