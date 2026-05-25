@@ -219,16 +219,16 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 // Database — single pool
 const db = mysql.createPool({
     host             : process.env.DB_HOST || 'zephyr.proxy.rlwy.net',
-    port              : process.env.DB_PORT || 3306,
+    port              : process.env.DB_PORT || 27450,
     user             : process.env.DB_USER || 'root',
     password         : process.env.DB_PASSWORD || '',
     database         : process.env.DB_NAME || 'nexlify',
     waitForConnections: true,
     connectionLimit  : 10,
     multipleStatements: true,
-    ssl: process.env.NODE_ENV === 'production' ? {
-        rejectUnauthorized: true
-    } : false
+    ssl: {
+    rejectUnauthorized: false
+}
 });
 
 db.query('SELECT 1', (err) => {

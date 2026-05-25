@@ -1,19 +1,19 @@
 {
     "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "Mysqlconnection",
-            "database": "nexlify",
-            "username": "root",
-            "askForPassword": true
-        }
+       {
+  "mysqlOptions": {
+    "authProtocol": "default",
+    "enableSsl": "Disabled"
+  },
+  "ssh": "Disabled",
+  "previewLimit": 50,
+  "server": "zephyr.proxy.rlwy.net",
+  "port": 27450,
+  "driver": "MySQL",
+  "name": "RailwayConnection",
+  "database": "railway",
+  "username": "root",
+  "askForPassword": true
+}
     ]
 }
