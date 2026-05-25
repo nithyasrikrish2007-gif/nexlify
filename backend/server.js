@@ -135,12 +135,11 @@ function rateLimit(maxRequests = 10, windowMs = 60000) {
 
 // Middleware
 const allowedOrigins = new Set([
-    'https://nexlify-sable.vercel.app/',
+    'https://nexlify-sable.vercel.app',
+    'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'http://127.0.0.1:5500',
-    'https://nexlify-sable.vercel.app'
 ]);
 if (process.env.BASE_URL) allowedOrigins.add(process.env.BASE_URL);
 if (process.env.BASE_URL) {
@@ -149,8 +148,11 @@ if (process.env.BASE_URL) {
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || origin === 'null' || allowedOrigins.has(origin)) return callback(null, true);
-        if (!origin || origin === 'null' || allowedOrigins.has(origin.replace(/\/$/, ""))) return callback(null, true);
+        const sanitizedOrigin = origin ? origin.replace(/\/$/, "") : null;
+        if (!origin || origin === 'null' || allowedOrigins.has(sanitizedOrigin)) {
+            return callback(null, true);
+        }
+        console.error(`CORS Blocked: Origin "${origin}" is not in the allowed list.`);
         callback(new Error('CORS origin denied'));
     },
     methods: ['GET', 'POST', 'PATCH'],
@@ -220,7 +222,7 @@ const db = mysql.createPool({
     port              : process.env.DB_PORT || 3306,
     user             : process.env.DB_USER || 'root',
     password         : process.env.DB_PASSWORD || '',
-    database         : process.env.DB_NAME || 'railway',
+    database         : process.env.DB_NAME || 'nexlify',
     waitForConnections: true,
     connectionLimit  : 10,
     multipleStatements: true,
