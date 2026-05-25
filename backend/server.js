@@ -138,7 +138,9 @@ const allowedOrigins = new Set([
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://localhost:5500',
-    'http://127.0.0.1:5500'
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:5500',
+    'https://nexlify-sable.vercel.app'
 ]);
 if (process.env.BASE_URL) allowedOrigins.add(process.env.BASE_URL);
 if (process.env.BASE_URL) {
@@ -1111,7 +1113,7 @@ app.post('/forgot-password', rateLimit(5, 60000), (req, res) => {
             resetStore.set(token, { email, expires });
 
             const PORT = process.env.PORT || 8080; // Define PORT here for local fallback
-            const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
+            const baseUrl = process.env.BASE_URL ||  'https://nexlify-ue98.onrender.com';
             const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
 
             sendMail({

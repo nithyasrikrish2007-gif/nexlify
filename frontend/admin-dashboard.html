@@ -1137,12 +1137,9 @@
 <!-- Toast -->
 <div class="dash-toast" id="dash-toast"></div>
 
-<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+<script src="https://nexlify-ue98.onrender.com/socket.io/socket.io.js"></script>
 <script>
-const API = (window.location.protocol || '').startsWith('http') ? window.location.origin : 'http://localhost:8080';
-if ((window.location.protocol || '').startsWith('file')) {
-    console.warn('Admin dashboard loaded from file://, falling back to localhost API base:', API);
-}
+const API = "https://nexlify-ue98.onrender.com";
 const socket = io(API);
 
 /* ── Auth ──────────────────────────────────────────────────────── */
