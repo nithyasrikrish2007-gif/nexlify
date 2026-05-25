@@ -134,29 +134,24 @@ function rateLimit(maxRequests = 10, windowMs = 60000) {
 }
 
 // Middleware
-const allowedOrigins = new Set([
+const allowedOrigins = [
+    'https://nexlify-ue98.onrender.com',
     'https://nexlify-sable.vercel.app',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-]);
-if (process.env.BASE_URL) allowedOrigins.add(process.env.BASE_URL);
-if (process.env.BASE_URL) {
-    allowedOrigins.add(process.env.BASE_URL.replace(/\/$/, ""));
-}
+];
 
 app.use(cors({
     origin: (origin, callback) => {
-        const sanitizedOrigin = origin ? origin.replace(/\/$/, "") : null;
-        if (!origin || origin === 'null' || allowedOrigins.has(sanitizedOrigin)) {
-            return callback(null, true);
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.error("CORS Blocked:", origin);
+            callback(null, false);
         }
-        console.error(`CORS Blocked: Origin "${origin}" is not in the allowed list.`);
-        callback(new Error('CORS origin denied'));
     },
-    methods: ['GET', 'POST', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(express.json());
