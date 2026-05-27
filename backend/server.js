@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express    = require('express');
+const dns        = require('dns');
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
@@ -16,6 +17,11 @@ const crypto     = require('crypto');
 const { exec }   = require('child_process');
 const { generateCertificateSVG } = require('./certificateGenerator');
 const axios      = require('axios');
+
+// Force IPv4 as primary for outgoing requests to avoid ENETUNREACH errors on IPv6-unsupported networks
+if (typeof dns.setDefaultResultOrder === 'function') {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const app    = express();
 
@@ -600,15 +606,17 @@ app.get('/api/admin/notifications', authenticateToken, requireAdmin, (req, res) 
 
 // ── MAIL SYSTEM ──
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
+// Add a check for missing email credentials
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('❌ WARNING: Nodemailer EMAIL_USER or EMAIL_PASS environment variables are not set. Mail functionality may fail.');
+}
 function sendMail(options) {
     transporter.sendMail(options, (err) => {
         if (err) console.log('Mail error:', err.message);
