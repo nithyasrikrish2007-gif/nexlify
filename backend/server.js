@@ -607,9 +607,10 @@ app.get('/api/admin/notifications', authenticateToken, requireAdmin, (req, res) 
 // ── MAIL SYSTEM ──
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6-only lookups
-  secure: false, // Use STARTTLS
+  port: 465,
+  secure: true,
+  family: 4,
+  lookup: (hostname, options, callback) => dns.lookup(hostname, { family: 4 }, callback),
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
