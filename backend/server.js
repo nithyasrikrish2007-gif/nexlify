@@ -600,10 +600,15 @@ app.get('/api/admin/notifications', authenticateToken, requireAdmin, (req, res) 
 
 // ── MAIL SYSTEM ──
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  family: 4,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
 });
-
 function sendMail(options) {
     transporter.sendMail(options, (err) => {
         if (err) console.log('Mail error:', err.message);
