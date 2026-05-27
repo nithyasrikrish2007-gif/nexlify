@@ -608,6 +608,7 @@ app.get('/api/admin/notifications', authenticateToken, requireAdmin, (req, res) 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
+  family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6-only lookups
   secure: false, // Use STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
