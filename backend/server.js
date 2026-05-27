@@ -9,7 +9,7 @@ const mysql      = require('mysql2');
 const cors       = require('cors');
 const bcrypt     = require('bcryptjs');
 const path       = require('path');
-const nodemailer = require('nodemailer');
+// nodemailer replaced by resend
 const http       = require('http');
 const { Server } = require('socket.io');
 const jwt        = require('jsonwebtoken');
@@ -605,28 +605,16 @@ app.get('/api/admin/notifications', authenticateToken, requireAdmin, (req, res) 
 });
 
 // ── MAIL SYSTEM ──
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  lookup: (hostname, options, callback) => dns.lookup(hostname, { family: 4 }, callback),
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000, // 10 seconds timeout
-  greetingTimeout: 10000,
-});
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Add a check for missing email credentials
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.error('❌ WARNING: Nodemailer EMAIL_USER or EMAIL_PASS environment variables are not set. Mail functionality may fail.');
-}
 function sendMail(options) {
-    transporter.sendMail(options, (err) => {
-        if (err) console.log('Mail error:', err.message);
-    });
+    resend.emails.send({
+        from: options.from || 'Nexlify University <onboarding@resend.dev>',
+        to: options.to,
+        subject: options.subject,
+        html: options.html || options.text
+    }).catch(err => console.log('Mail error:', err.message));
 }
 
 // ── CHAT SYSTEM ──
